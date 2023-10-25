@@ -1,0 +1,963 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>大先生管理工具SCUM资源点地图（数据取于：人渣中文社区）</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./css/leaflet.css" />
+    <script src="./css/leaflet.js"></script>
+</head>
+<body style="margin: 0;">
+    <div id="map" style="width: 100vw; height: 100vh; background: #cacaca;"></div>
+    <script>
+        var factorx = 0.000213333333333333333333
+        var factory = 0.000213333333333333333333
+        L.CRS.custom = L.extend({}, L.CRS.Simple, {
+            projection: L.Projection.LonLat,
+            transformation: new L.Transformation(factorx, 0, -factory, 0),
+            scale: function (zoom) {
+                return Math.pow(2, zoom);
+            },
+
+            zoom: function (scale) {
+                return Math.log(scale) / Math.LN2;
+            },
+
+            distance: function (latlng1, latlng2) {
+                var dx = latlng2.lng - latlng1.lng,
+                    dy = latlng2.lat - latlng1.lat;
+
+                return Math.sqrt(dx * dx + dy * dy);
+            },
+
+            infinite: true
+        });
+        var map = L.map('map', {
+            center: [-750000, 750000],
+            zoom: 1,
+            crs: L.CRS.custom
+        });
+        var bounds = [
+            [-0, 0],
+            [-1500000, 1500000]
+        ];
+        L.tileLayer('./map/{z}/{x}_{y}.jpg', {
+            bounds: bounds,
+            attribution: '<a href="https://www.wolai.com/81VUwoHKB8tFz3hkEDpTgk">大先生制作</a>---<a href="https://bbs.cnscum.com/">数据取于:SCUM中文社区',
+            minZoom: 1,
+            maxZoom: 6,
+            noWrap: true
+        }).addTo(map);
+        var mg_custom = L.layerGroup();
+        var mg_bunker = L.layerGroup();
+        var mg_poi = L.layerGroup();
+        var mg_ressource_fuel = L.layerGroup();
+        var mg_poi_village = L.layerGroup();
+        var mg_poi_town = L.layerGroup();
+        var mg_poi_city = L.layerGroup();
+        var mg_shipwreck = L.layerGroup();
+        var mg_vehicle = L.layerGroup();
+        var mg_poi_cave = L.layerGroup();
+        var mg_ressource_work = L.layerGroup();
+        var mg_paddle = L.layerGroup();
+        var mg_zodiac = L.layerGroup();
+        var mg_lighthouse = L.layerGroup();
+        var mg_ww2 = L.layerGroup();
+        var mg_shashi = L.layerGroup();
+        var mg_shashi = L.layerGroup();
+        var mg_shashi = L.layerGroup();
+        var mg_gs = L.layerGroup();
+        var mg_jy = L.layerGroup();
+        var mg_jyY = L.layerGroup();
+        var mg_cdc = L.layerGroup();
+        var mi_警察局 = L.layerGroup();
+        var overlayAll = {
+     "<img src='./map/7/021-箭头.png' height='20'/>": mg_cdc,
+
+    };
+  var overlayHabitations = {
+      "<img src='./icon/mgi_bunker.png' height='20' />  地堡": mg_bunker,
+      "<img src='./icon/mgi_poi.png' height='20' />  网红打卡": mg_poi,
+      "<img src='./icon/mgi_fuel.png' height='20' />  加油站": mg_ressource_fuel,
+      "<img src='./icon/mgi_shipwreck.png' height='20' />  海滩": mg_shipwreck,
+      "<img src='./icon/mgi_vehicle.png' height='20' />  车辆": mg_vehicle,
+      "<img src='./icon/mgi_poi_cave.png' height='20' />  岩石堆": mg_poi_cave,
+      "<img src='./icon/mgi_ressource_work.png' height='20' />  工作台": mg_ressource_work,
+      "<img src='./icon/mgi_lighthouse.png' height='20' />  灯塔": mg_lighthouse,
+      "<img src='./icon/mgi_ww2.png' height='20' /> 二战碉堡": mg_ww2,
+	  "<img src='./icon/mgi_shashi.png' height='20' /> 建材位置": mg_shashi,
+	  "<img src='./icon/mgi_gs.png' height='20' /> 水果蔬菜": mg_gs,
+	  "<img src='./icon/mgi_jy.png' height='20' /> 交易站": mg_jy, 
+      "<img src='./icon/mgi_village.png' height='20' />  村庄": mg_poi_village,
+      "<img src='./icon/mgi_town.png' height='20' />  小镇": mg_poi_town,
+      "<img src='./icon/mgi_city.png' height='20' />  城市": mg_poi_city,
+      "<img src='./icon/mgi_paddle.png' height='20' />  浆板": mg_paddle,
+      "<img src='./icon/mgi_zodiac.png' height='20' />  船": mg_zodiac,
+      "<img src='./icon/10001.svg' height='20' />  警察局": mi_警察局,
+  };
+  //L.control.layers(null, overlayAll, {collapsed: false}).addTo(map);
+  L.control.layers(null, overlayHabitations, {collapsed: true}).addTo(map);
+        //var mg_cdc = L.icon({
+            //iconUrl: './map/7/021-箭头.png',
+            //iconSize: [42, 42],
+            //iconAnchor: [21, 42],
+       //});
+       var mi_警察局 = L.icon({
+            iconUrl: './icon/10001.svg',
+            iconSize: [50, 50],
+            iconAnchor: [25,25],
+        })
+        var mi_bunker = L.icon({
+            iconUrl: './icon/mi_bunker.png',
+            iconSize: [42, 42],
+            iconAnchor: [21, 42],
+        });
+        var mi_poi_industrial = L.icon({
+            iconUrl: './icon/mi_poi_industrial.png',
+            iconSize: [42, 42],
+            iconAnchor: [21, 42],
+        });
+        var mi_poi_military = L.icon({
+            iconUrl: './icon/mi_poi_military.png',
+            iconSize: [42, 42],
+            iconAnchor: [21, 42],
+        });
+        var mi_poi_village = L.icon({
+            iconUrl: './icon/mi_poi_village.png',
+            iconSize: [42, 42],
+            iconAnchor: [21, 42],
+        });
+        var mi_poi_town = L.icon({
+            iconUrl: './icon/mi_poi_town.png',
+            iconSize: [42, 42],
+            iconAnchor: [21, 42],
+        });
+        var mi_poi_city = L.icon({
+            iconUrl: './icon/mi_poi_city.png',
+            iconSize: [42, 42],
+            iconAnchor: [21, 42],
+        });
+        var mi_poi_scientific = L.icon({
+            iconUrl: './icon/mi_poi_scientific.png',
+            iconSize: [42, 42],
+            iconAnchor: [21, 42],
+        });
+        var mi_custom_vehicle = L.icon({
+            iconUrl: './icon/mi_custom_vehicle.png',
+            iconSize: [42, 42],
+            iconAnchor: [21, 42],
+        });
+        var mi_ressource_fuel = L.icon({
+            iconUrl: './icon/mi_ressource_fuel.png',
+            iconSize: [42, 42],
+            iconAnchor: [21, 42],
+        });
+        var mi_shipwreck = L.icon({
+            iconUrl: './icon/mi_shipwreck.png',
+            iconSize: [42, 42],
+            iconAnchor: [21, 42],
+        });
+        var mi_vehicle = L.icon({
+            iconUrl: './icon/mi_vehicle.png',
+            iconSize: [42, 42],
+            iconAnchor: [21, 42],
+        });
+        var mi_poi_mystery = L.icon({
+            iconUrl: './icon/mi_poi_mystery.png',
+            iconSize: [42, 42],
+            iconAnchor: [21, 42],
+        });
+        var mi_poi_cave = L.icon({
+            iconUrl: './icon/mi_poi_cave.png',
+            iconSize: [42, 42],
+            iconAnchor: [21, 42],
+        });
+        var mi_ressource_work = L.icon({
+            iconUrl: './icon/mi_ressource_work.png',
+            iconSize: [42, 42],
+            iconAnchor: [21, 42],
+        })
+        var mi_ww2 = L.icon({
+            iconUrl: './icon/mi_ww2.png',
+            iconSize: [42, 42],
+            iconAnchor: [21, 42],
+        })
+        var mi_lighthouse = L.icon({
+            iconUrl: './icon/mi_lighthouse.png',
+            iconSize: [42, 42],
+            iconAnchor: [21, 42],
+        })
+        var mi_zhuan = L.icon({
+            iconUrl: './icon/mi_zhuan.png',
+            iconSize: [42, 42],
+            iconAnchor: [21, 42],
+        })
+        var mi_shuini = L.icon({
+            iconUrl: './icon/mi_shuini.png',
+            iconSize: [42, 42],
+            iconAnchor: [21, 42],
+        })
+        var mi_shashi = L.icon({
+            iconUrl: './icon/mi_shashi.png',
+            iconSize: [42, 42],
+            iconAnchor: [21, 42],
+        })
+        var mi_jy = L.icon({
+            iconUrl: './icon/mi_jy.png',
+            iconSize: [42, 42],
+            iconAnchor: [21, 42],
+        })
+        var mi_pg = L.icon({
+            iconUrl: './icon/mi_pg.png',
+            iconSize: [42, 42],
+            iconAnchor: [21, 42],
+        })
+        var mi_xg = L.icon({
+            iconUrl: './icon/mi_xg.png',
+            iconSize: [42, 42],
+            iconAnchor: [21, 42],
+        })
+        var mi_yt = L.icon({
+            iconUrl: './icon/mi_yt.png',
+            iconSize: [42, 42],
+            iconAnchor: [21, 42],
+        })
+        var mi_gl = L.icon({
+            iconUrl: './icon/mi_gl.png',
+            iconSize: [42, 42],
+            iconAnchor: [21, 42],
+        })
+        var mi_xlh = L.icon({
+            iconUrl: './icon/mi_xlh.png',
+            iconSize: [42, 42],
+            iconAnchor: [21, 42],
+        })
+        var mi_bc = L.icon({
+            iconUrl: './icon/mi_bc.png',
+            iconSize: [42, 42],
+            iconAnchor: [21, 42],
+        })
+        var mi_hg = L.icon({
+            iconUrl: './icon/mi_hg.png',
+            iconSize: [42, 42],
+            iconAnchor: [21, 42],
+        })
+        var mi_wh_kjjd = L.icon({
+            iconUrl: './icon/mi_wh_kjjd.png',
+            iconSize: [100, 52],
+            iconAnchor: [50, 52],
+        })
+        var mi_wh_dc = L.icon({
+            iconUrl: './icon/mi_wh_dc.png',
+            iconSize: [100, 52],
+            iconAnchor: [50, 52],
+        })
+        var mi_wh_lyy = L.icon({
+            iconUrl: './icon/mi_wh_lyy.png',
+            iconSize: [100, 52],
+            iconAnchor: [50, 52],
+        })
+        var mi_wh_fmc = L.icon({
+            iconUrl: './icon/mi_wh_fmc.png',
+            iconSize: [100, 52],
+            iconAnchor: [50, 52],
+        })
+        var mi_wh_xscb = L.icon({
+            iconUrl: './icon/mi_wh_xscb.png',
+            iconSize: [100, 52],
+            iconAnchor: [50, 52],
+        })
+        var mi_wh_kj = L.icon({
+            iconUrl: './icon/mi_wh_kj.png',
+            iconSize: [100, 52],
+            iconAnchor: [50, 52],
+        })
+        var mi_wh_gw = L.icon({
+            iconUrl: './icon/mi_wh_gw.png',
+            iconSize: [100, 52],
+            iconAnchor: [50, 52],
+        })
+        var mi_wh_bwg = L.icon({
+            iconUrl: './icon/mi_wh_bwg.png',
+            iconSize: [100, 52],
+            iconAnchor: [50, 52],
+        })
+        var mi_wh_jy = L.icon({
+            iconUrl: './icon/mi_wh_jy.png',
+            iconSize: [100, 52],
+            iconAnchor: [50, 52],
+        })
+        var mi_wh_pb = L.icon({
+            iconUrl: './icon/mi_wh_pb.png',
+            iconSize: [100, 52],
+            iconAnchor: [50, 52],
+        })
+        var mi_wh_zh = L.icon({
+            iconUrl: './icon/mi_wh_zh.png',
+            iconSize: [100, 52],
+            iconAnchor: [50, 52],
+        })
+        var mi_wh_zp = L.icon({
+            iconUrl: './icon/mi_wh_zp.png',
+            iconSize: [100, 52],
+            iconAnchor: [50, 52],
+        })
+        var mi_zodiac = L.icon({
+            iconUrl: './icon/mi_wh_zp.png',
+            iconSize: [100, 52],
+            iconAnchor: [50, 52],
+        })
+        var mi_A11 = L.icon({
+            iconUrl: './map/7/A11.png',
+            iconSize: [30, 30],
+            iconAnchor: [0, 0],
+        })
+        var mi_A1 = L.icon({
+            iconUrl: './map/7/A1.png',
+            iconSize: [30, 30],
+            iconAnchor: [0, 0],
+        })
+        var mi_A2 = L.icon({
+            iconUrl: './map/7/A2.png',
+            iconSize: [30, 30],
+            iconAnchor: [0, 0],
+        })
+        var mi_A3 = L.icon({
+            iconUrl: './map/7/A3.png',
+            iconSize: [30, 30],
+            iconAnchor: [0, 0],
+        })        
+        var mi_A4 = L.icon({
+            iconUrl: './map/7/A4.png',
+            iconSize: [30, 30],
+            iconAnchor: [0, 0],
+        })
+        var mi_B0 = L.icon({
+            iconUrl: './map/7/B0.png',
+            iconSize: [30, 30],
+            iconAnchor: [0, 0],
+        })
+        var mi_B1 = L.icon({
+            iconUrl: './map/7/B1.png',
+            iconSize: [30, 30],
+            iconAnchor: [0, 0],
+        })
+        var mi_B2 = L.icon({
+            iconUrl: './map/7/B2.png',
+            iconSize: [30, 30],
+            iconAnchor: [0, 0],
+        })
+        var mi_B3 = L.icon({
+            iconUrl: './map/7/B3.png',
+            iconSize: [30, 30],
+            iconAnchor: [0, 0],
+        })
+        var mi_B4 = L.icon({
+            iconUrl: './map/7/B4.png',
+            iconSize: [30, 30],
+            iconAnchor: [0, 0],
+        })
+        var mi_C0 = L.icon({
+            iconUrl: './map/7/C0.png',
+            iconSize: [30, 30],
+            iconAnchor: [0, 0],
+        })
+        var mi_C1 = L.icon({
+            iconUrl: './map/7/C1.png',
+            iconSize: [30, 30],
+            iconAnchor: [0, 0],
+        })
+        var mi_C2 = L.icon({
+            iconUrl: './map/7/C2.png',
+            iconSize: [30, 30],
+            iconAnchor: [0, 0],
+        })
+        var mi_C3 = L.icon({
+            iconUrl: './map/7/C3.png',
+            iconSize: [30, 30],
+            iconAnchor: [0, 0],
+        })
+        var mi_C4 = L.icon({
+            iconUrl: './map/7/C4.png',
+            iconSize: [30, 30],
+            iconAnchor: [0, 0],
+        })
+        var mi_D0 = L.icon({
+            iconUrl: './map/7/D0.png',
+            iconSize: [30, 30],
+            iconAnchor: [0, 0],
+        })
+        var mi_D1 = L.icon({
+            iconUrl: './map/7/D1.png',
+            iconSize: [30, 30],
+            iconAnchor: [0, 0],
+        })
+        var mi_D2 = L.icon({
+            iconUrl: './map/7/D2.png',
+            iconSize: [30, 30],
+            iconAnchor: [0, 0],
+        })
+        var mi_D3 = L.icon({
+            iconUrl: './map/7/D3.png',
+            iconSize: [30, 30],
+            iconAnchor: [0, 0],
+        })
+        var mi_D4 = L.icon({
+            iconUrl: './map/7/D4.png',
+            iconSize: [30, 30],
+            iconAnchor: [0, 0],
+        })
+        var mi_Z0 = L.icon({
+            iconUrl: './map/7/Z0.png',
+            iconSize: [30, 30],
+            iconAnchor: [0, 0],
+        })
+        var mi_Z1 = L.icon({
+            iconUrl: './map/7/Z1.png',
+            iconSize: [30, 30],
+            iconAnchor: [0, 0],
+        })
+        var mi_Z2 = L.icon({
+            iconUrl: './map/7/Z2.png',
+            iconSize: [30, 30],
+            iconAnchor: [0, 0],
+        })
+        var mi_Z3 = L.icon({
+            iconUrl: './map/7/Z3.png',
+            iconSize: [30, 30],
+            iconAnchor: [0, 0],
+        })
+        var mi_Z4 = L.icon({
+            iconUrl: './map/7/Z4.png',
+            iconSize: [30, 30],
+            iconAnchor: [0, 0],
+        })
+        var mi_交易站 = L.icon({
+            iconUrl: './map/7/圆圈.png',
+            iconSize: [50, 50],
+            iconAnchor: [25,25],
+        })
+        map.on('click', function (e) {
+            var oldLat = e.latlng.lat
+            oldLng = e.latlng.lng
+            newLat = (oldLat + 611617.1875) * 1.030858556
+            newLng = (oldLng - 609346.6796875) * -1.010991255
+            popup = L.popup()
+            .setLatLng(e.latlng)
+            .setContent("</text><text style=color:#0062ff>" + "# X=" + newLng + " Y=" + newLat + " Z=0← </text>")
+            .openOn(map);
+        });
+        var latlngs = [[0, 300000], [-1500000, 300000]]
+        var polyline = L.polyline(latlngs, { color: '#373735' }).addTo(map);
+        var latlngs = [[0, 600000], [-1500000, 600000]]
+        var polyline = L.polyline(latlngs, { color: '#373735' }).addTo(map);
+        var latlngs = [[0, 900000], [-1500000, 900000]]
+        var polyline = L.polyline(latlngs, { color: '#373735' }).addTo(map);
+        var latlngs = [[0, 1200000], [-1500000, 1200000]]
+        var polyline = L.polyline(latlngs, { color: '#373735' }).addTo(map);
+        var latlngs = [[-300000, 0], [-300000, 1500000]]
+        var polyline = L.polyline(latlngs, { color: '#373735' }).addTo(map);
+        var latlngs = [[-600000, 0], [-600000, 1500000]]
+        var polyline = L.polyline(latlngs, { color: '#373735' }).addTo(map);
+        var latlngs = [[-900000, 0], [-900000.74, 1500000]]
+        var polyline = L.polyline(latlngs, { color: '#373735' }).addTo(map);
+        var latlngs = [[-1200000, 0], [-1200000, 1500000]]
+        var polyline = L.polyline(latlngs, { color: '#373735' }).addTo(map);
+        var mm_bunkera1 = L.marker([-1072558.59375, 952880.859375], { icon: mi_bunker }).bindPopup('<b>地堡 – A1</b><br>建筑：地堡<br>SCUM岛上诸多地堡之一，如果服主设置有机甲，就会有机甲守护<br><b>会出现的资源</b><br>-各种武器、子弹、武器配件<br>-各种军用服装和装备<br>-很多挂锁<br>-很多食物<br>-很多制作材料<br><text style=color:#ff2a00># X=X=-347716.438 Y=-468245.969 Z=3917.318← </text>', { minWidth: 200 }).addTo(mg_bunker);
+        var mm_bunkera2 = L.marker([-930029.296875, 648852.5390625], { icon: mi_bunker }).bindPopup('<b>地堡 – A2</b><br>建筑：地堡<br>SCUM岛上诸多地堡之一，如果服主设置有机甲，就会有机甲守护<br><b>会出现的资源</b><br>-各种武器、子弹、武器配件<br>-各种军用服装和装备<br>-很多挂锁<br>-很多食物<br>-很多制作材料<br><text style=color:#ff2a00># X=-41386.672 Y=-324877.938 Z=16204.857← </text>', { minWidth: 200 }).addTo(mg_bunker);
+        var mm_bunkera3 = L.marker([-1050732.421875, 381445.3125], { icon: mi_bunker }).bindPopup('<b>地堡 – A3</b><br>建筑：地堡<br>SCUM岛上诸多地堡之一，如果服主设置有机甲，就会有机甲守护<br><b>会出现的资源</b><br>-各种武器、子弹、武器配件<br>-各种军用服装和装备<br>-很多挂锁<br>-很多食物<br>-很多制作材料<br><text style=color:#ff2a00># X=229673.047 Y=-447141.688 Z=9223.052← </text>', { minWidth: 200 }).addTo(mg_bunker);
+        var mm_bunkera4 = L.marker([-1007812.5, 166406.25], { icon: mi_bunker }).bindPopup('<b>地堡 – A4</b><br>建筑：地堡<br>SCUM岛上诸多地堡之一，如果服主设置有机甲，就会有机甲守护<br><b>会出现的资源</b><br>-各种武器、子弹、武器配件<br>-各种军用服装和装备<br>-很多挂锁<br>-很多食物<br>-很多制作材料<br>><text style=color:#ff2a00># X=449972.219 Y=-400864.188 Z=7881.245← </text>', { minWidth: 200 }).addTo(mg_bunker);
+        var mm_bunkerb1 = L.marker([-866381.8359375, 1186157.2265625], { icon: mi_bunker }).bindPopup('<b>地堡 – B1</b><br>建筑：地堡<br>SCUM岛上诸多地堡之一，如果服主设置有机甲，就会有机甲守护<br><b>会出现的资源</b><br>-各种武器、子弹、武器配件<br>-各种军用服装和装备<br>-很多挂锁<br>-很多食物<br>-很多制作材料<br><text style=color:#ff2a00># X=-585961.688 Y=-261780.672 Z=17011.094← </text>', { minWidth: 200 }).addTo(mg_bunker);
+        var mm_bunkerb2 = L.marker([-803613.28125, 648632.8125], { icon: mi_bunker }).bindPopup('<b>地堡 – B2</b><br>建筑：地堡<br>SCUM岛上诸多地堡之一，如果服主设置有机甲，就会有机甲守护<br><b>会出现的资源</b><br>-各种武器、子弹、武器配件<br>-各种军用服装和装备<br>-很多挂锁<br>-很多食物<br>-很多制作材料<br><text style=color:#ff2a00># X=-41533.008 Y=-196615.469 Z=31755.539← </text>', { minWidth: 200 }).addTo(mg_bunker);
+        var mm_bunkerb3 = L.marker([-700781.25, 374853.515625], { icon: mi_bunker }).bindPopup('<b>地堡 – B3</b><br>建筑：地堡<br>SCUM岛上诸多地堡之一，如果服主设置有机甲，就会有机甲守护<br><b>会出现的资源</b><br>-各种武器、子弹、武器配件<br>-各种军用服装和装备<br>-很多挂锁<br>-很多食物<br>-很多制作材料<br><text style=color:#ff2a00># X=238775.219 Y=-93155.68 Z=30600.986← </text>', { minWidth: 900 }).addTo(mg_bunker);
+        var mm_bunkerb4 = L.marker([-623364.2578125, 175195.3125], { icon: mi_bunker }).bindPopup('<b>地堡 – B4</b><br>建筑：地堡<br>SCUM岛上诸多地堡之一，如果服主设置有机甲，就会有机甲守护<br><b>会出现的资源</b><br>-各种武器、子弹、武器配件<br>-各种军用服装和装备<br>-很多挂锁<br>-很多食物<br>-很多制作材料<br><text style=color:#ff2a00># X=443572.25 Y=-13683.408 Z=11911.952← </text>', { minWidth: 200 }).addTo(mg_bunker);
+        var mm_bunkerc1 = L.marker([-397045.8984375, 997045.8984375], { icon: mi_bunker }).bindPopup('<b>地堡 – C1</b><br>建筑：地堡<br>SCUM岛上诸多地堡之一，如果服主设置有机甲，就会有机甲守护<br><b>会出现的资源</b><br>-各种武器、子弹、武器配件<br>-各种军用服装和装备<br>-很多挂锁<br>-很多食物<br>-很多制作材料<br><text style=color:#ff2a00># X=-392924.625 Y=218418.844 Z=59807.191← </text>', { minWidth: 200 }).addTo(mg_bunker);
+        var mm_bunkerc2 = L.marker([-423486.328125, 823168.9453125], { icon: mi_bunker }).bindPopup('<b>地堡 – C2</b><br>建筑：地堡<br>SCUM岛上诸多地堡之一，如果服主设置有机甲，就会有机甲守护<br><b>会出现的资源</b><br>-各种武器、子弹、武器配件<br>-各种军用服装和装备<br>-很多挂锁<br>-很多食物<br>-很多制作材料<br><text style=color:#ff2a00># X=-219747.234 Y=194767.813 Z=75466.609← </text>', { minWidth: 200 }).addTo(mg_bunker);
+        var mm_bunkerc3 = L.marker([-322558.59375, 424658.203125], { icon: mi_bunker }).bindPopup('<b>地堡 – C3</b><br>建筑：地堡<br>SCUM岛上诸多地堡之一，如果服主设置有机甲，就会有机甲守护<br><b>会出现的资源</b><br>-各种武器、子弹、武器配件<br>-各种军用服装和装备<br>-很多挂锁<br>-很多食物<br>-很多制作材料<br><text style=color:#ff2a00># X=190821.797 Y=291545.688 Z=40258.574← </text>', { minWidth: 200 }).addTo(mg_bunker);
+        var mm_bunkerc4 = L.marker([-353759.765625, 167871.09375], { icon: mi_bunker }).bindPopup('<b>地堡 – C4</b><br>建筑：地堡<br>SCUM岛上诸多地堡之一，如果服主设置有机甲，就会有机甲守护<br><b>会出现的资源</b><br>-各种武器、子弹、武器配件<br>-各种军用服装和装备<br>-很多挂锁<br>-很多食物<br>-很多制作材料<br><text style=color:#ff2a00># X=448459.594 Y=262014 Z=17634.145← </text>', { minWidth: 200 }).addTo(mg_bunker);
+        var mm_bunkerd1 = L.marker([-78369.140625, 1138916.015625], { icon: mi_bunker }).bindPopup('<b>地堡 – D1</b><br>建筑：地堡<br>SCUM岛上诸多地堡之一，如果服主设置有机甲，就会有机甲守护<br><b>会出现的资源</b><br>-各种武器、子弹、武器配件<br>-各种军用服装和装备<br>-很多挂锁<br>-很多食物<br>-很多制作材料<br><text style=color:#ff2a00># X=-538366.438 Y=539785 Z=80994.234← </text>', { minWidth: 200 }).addTo(mg_bunker);
+        var mm_bunkerd2 = L.marker([-50463.8671875, 846459.9609375], { icon: mi_bunker }).bindPopup('<b>地堡 – D2</b><br>建筑：地堡<br>SCUM岛上诸多地堡之一，如果服主设置有机甲，就会有机甲守护<br><b>会出现的资源</b><br>-各种武器、子弹、武器配件<br>-各种军用服装和装备<br>-很多挂锁<br>-很多食物<br>-很多制作材料<br><text style=color:#ff2a00># X=-242313.516 Y=569235.5 Z=71962.805← </text>', { minWidth: 200 }).addTo(mg_bunker);
+        var mm_bunkerd3 = L.marker([-70898.4375, 469262.6953125], { icon: mi_bunker }).bindPopup('<b>地堡 – D3</b><br>建筑：地堡<br>SCUM岛上诸多地堡之一，如果服主设置有机甲，就会有机甲守护<br><b>会出现的资源</b><br>-各种武器、子弹、武器配件<br>-各种军用服装和装备<br>-很多挂锁<br>-很多食物<br>-很多制作材料<br><text style=color:#ff2a00># X=142292.453 Y=546827.813 Z=24663.16← </text>', { minWidth: 200 }).addTo(mg_bunker);
+        var mm_bunkerd4 = L.marker([-64306.640625, 209545.8984375], { icon: mi_bunker }).bindPopup('<b>地堡 – D4</b><br>建筑：地堡<br>SCUM岛上诸多地堡之一，如果服主设置有机甲，就会有机甲守护<br><b>会出现的资源</b><br>-各种武器、子弹、武器配件<br>-各种军用服装和装备<br>-很多挂锁<br>-很多食物<br>-很多制作材料<br><text style=color:#ff2a00># X=406304.625 Y=556126.938 Z=15891.045← </text>', { minWidth: 200 }).addTo(mg_bunker);
+        var mm_bunkerd4 = L.marker([-1425585.9375, 96093.75], { icon: mi_bunker }).bindPopup('<b>地堡 – Z4</b><br>建筑：地堡<br>SCUM岛上诸多地堡之一，如果服主设置有机甲，就会有机甲守护<br><b>会出现的资源</b><br>-各种武器、子弹、武器配件<br>-各种军用服装和装备<br>-很多挂锁<br>-很多食物<br>-很多制作材料<br><text style=color:#ff2a00># X=521858.594 Y=-824168.688 Z=4855.804← </text>', { minWidth: 200 }).addTo(mg_bunker);
+        var mm_bunkerd4 = L.marker([-1410351.5625, 580078.125], { icon: mi_bunker }).bindPopup('<b>地堡 – Z3</b><br>建筑：地堡<br>SCUM岛上诸多地堡之一，如果服主设置有机甲，就会有机甲守护<br><b>会出现的资源</b><br>-各种武器、子弹、武器配件<br>-各种军用服装和装备<br>-很多挂锁<br>-很多食物<br>-很多制作材料<br><text style=color:#ff2a00># X=30829.924 Y=-807690.688 Z=11149.336← </text>', { minWidth: 200 }).addTo(mg_bunker);
+        var mm_bunkerd4 = L.marker([-1245996.09375, 809472.65625], { icon: mi_bunker }).bindPopup('<b>地堡 – Z2</b><br>建筑：地堡<br>SCUM岛上诸多地堡之一，如果服主设置有机甲，就会有机甲守护<br><b>会出现的资源</b><br>-各种武器、子弹、武器配件<br>-各种军用服装和装备<br>-很多挂锁<br>-很多食物<br>-很多制作材料<br><text style=color:#ff2a00># X=-201288.625 Y=-645755 Z=5436.01← </text>', { minWidth: 200 }).addTo(mg_bunker);
+        var mm_bunkerd4 = L.marker([-1322753.90625, 1172460.9375], { icon: mi_bunker }).bindPopup('<b>地堡 – Z1</b><br>建筑：地堡<br>SCUM岛上诸多地堡之一，如果服主设置有机甲，就会有机甲守护<br><b>会出现的资源</b><br>-各种武器、子弹、武器配件<br>-各种军用服装和装备<br>-很多挂锁<br>-很多食物<br>-很多制作材料<br><text style=color:#ff2a00># X=-570562.125 Y=-722662.875 Z=14650.013← </text>', { minWidth: 900 }).addTo(mg_bunker);
+        var mm_bunkerd4 = L.marker([-1391894.53125, 1297851.5625], { icon: mi_bunker }).bindPopup('<b>地堡 – Z0</b><br>建筑：地堡<br>SCUM岛上诸多地堡之一，如果服主设置有机甲，就会有机甲守护<br><b>会出现的资源</b><br>-各种武器、子弹、武器配件<br>-各种军用服装和装备<br>-很多挂锁<br>-很多食物<br>-很多制作材料<br><text style=color:#ff2a00># X=-700424.625 Y=-792452.438 Z=10660.393← </text>', { minWidth: 200 }).addTo(mg_bunker);
+        var mm_bunkerd4 = L.marker([-955957.03125, 1369628.90625], { icon: mi_bunker }).bindPopup('<b>地堡 – A0</b><br>建筑：地堡<br>SCUM岛上诸多地堡之一，如果服主设置有机甲，就会有机甲守护<br><b>会出现的资源</b><br>-各种武器、子弹、武器配件<br>-各种军用服装和装备<br>-很多挂锁<br>-很多食物<br>-很多制作材料<br><text style=color:#ff2a00># X=-769536.625 Y=-349272.75 Z=6321.235← </text>', { minWidth: 200 }).addTo(mg_bunker);
+        var mm_bunkerd4 = L.marker([-698144.53125, 1407128.90625], { icon: mi_bunker }).bindPopup('<b>地堡 – B0</b><br>建筑：地堡<br>SCUM岛上诸多地堡之一，如果服主设置有机甲，就会有机甲守护<br><b>会出现的资源</b><br>-各种武器、子弹、武器配件<br>-各种军用服装和装备<br>-很多挂锁<br>-很多食物<br>-很多制作材料<br><text style=color:#ff2a00># X=-807683.25 Y=-89709.344 Z=35347.766← </text>', { minWidth: 200 }).addTo(mg_bunker);
+        var mm_bunkerd4 = L.marker([-433886.71875, 1469238.28125], { icon: mi_bunker }).bindPopup('<b>地堡 – C0</b><br>建筑：地堡<br>SCUM岛上诸多地堡之一，如果服主设置有机甲，就会有机甲守护<br><b>会出现的资源</b><br>-各种武器、子弹、武器配件<br>-各种军用服装和装备<br>-很多挂锁<br>-很多食物<br>-很多制作材料<br><text style=color:#ff2a00># X=-869619.5 Y=179713.156 Z=45503.391← </text>', { minWidth: 200 }).addTo(mg_bunker);
+        var mm_bunkerd4 = L.marker([-23144.53125, 1467773.4375], { icon: mi_bunker }).bindPopup('<b>地堡 – D0</b><br>建筑：地堡<br>SCUM岛上诸多地堡之一，如果服主设置有机甲，就会有机甲守护<br><b>会出现的资源</b><br>-各种武器、子弹、武器配件<br>-各种军用服装和装备<br>-很多挂锁<br>-很多食物<br>-很多制作材料<br><text style=color:#ff2a00># X=-871756.938 Y=597525 Z=62947.422← </text>', { minWidth: 200 }).addTo(mg_bunker);
+        var mm_poi_kjjd = L.marker([-43945.3125, 124218.75], { icon: mi_wh_kjjd }).bindPopup('<b>空军基地</b><br>类型：军事<br>大型建筑<br>SCUM岛上诸多大型物资点之一，如果服主设置有机甲，就会有机甲守护<br><b>会出现的资源</b><br>--各种武器、子弹、武器配件<br>-各种军用服装和装备<br>-很多挂锁<br>-很多食物<br>-很多制作材料<br></a></b><text style=color:#ff2a00># X=493308.469 Y=575547.938 Z=8324.670← </text>', { minWidth: 200 }).addTo(mg_poi);
+        var mm_poi_dc = L.marker([-259570.3125, 301391.6015625], { icon: mi_wh_dc }).bindPopup('<b>大城</b><br>类型：城市<br>大型建筑群<br>SCUM岛上最大的城市，在这里你可以发现一切物资<br><b>会出现的资源</b><br>--各种武器、子弹、武器配件<br>-各种军用服装和装备<br>-很多挂锁<br>-很多食物<br>-很多制作材料<br><br><text style=color:#ff2a00># X=310881.625 Y=357143.750 Z=21362.688← </text>', { minWidth: 200 }).addTo(mg_poi);
+        var mm_poi_lyy = L.marker([-317578.125, 242944.3359375], { icon: mi_wh_lyy }).bindPopup('<b>疗养院</b><br>类型：医院<br>中型建筑<br>SCUM岛上最大的医院，在这里你可以发现很多物资<br><b>会出现的资源</b><br>--一些武器、子弹、武器配件<br>-一些军用服装和装备<br>-一些制作材料<br><text style=color:#ff2a00># X=373073.094 Y=296989.344 Z=19925.514← </text>', { minWidth: 200 }).addTo(mg_poi);
+        var mm_poi_fmc = L.marker([-122460.9375, 701953.125], { icon: mi_wh_fmc }).bindPopup('<b>伐木场</b><br>类型：工业<br>中型建筑<br>SCUM岛上伐木场，在这里你可以发现一些物资<br><b>会出现的资源</b><br>--少量武器、子弹、武器配件<br>-少量军用服装和装备<br>-少量食物<br>-很多制作材料<br><br><text style=color:#ff2a00># X=-94332.281 Y=494692.563 Z=44600.426← </text>', { minWidth: 200 }).addTo(mg_poi);
+        var mm_poi_xscb = L.marker([-271801.7578125, 724365.234375], { icon: mi_wh_xscb }).bindPopup('<b>雪山城堡</b><br>类型：古迹<br>中型建筑<br>SCUM岛上一个很漂亮的古堡遗迹，风景非常美<br><b>会出现的资源</b><br>-中世纪剑、头盔刷新点<br>-少量武器、子弹、武器配件<br>-少量军用服装和装备<br>-少量食物<br>-很多制作材料<br><br><text style=color:#ff2a00># X=-64501.039 Y=347254.375 Z=86916.344← </text>', { minWidth: 200 }).addTo(mg_poi);
+        var mm_poi_kj = L.marker([-190429.6875, 1058715.8203125], { icon: mi_wh_kj }).bindPopup('<b>煤炭矿井</b><br>类型：工业<br>大型建筑<br>SCUM岛上一个矿井，你可以在这边找到煤炭<br><b>会出现的资源</b><br>--一些武器、子弹、武器配件<br>-一些军用服装和装备<br>-煤炭<br>-一些食物<br>-一些制作材料<br><br><text style=color:#ff2a00># X=-458981.688 Y=420269.469 Z=98253.938← </text>', { minWidth: 200 }).addTo(mg_poi);
+        var mm_poi_gw = L.marker([-10913.0859375, 1085156.25], { icon: mi_wh_gw }).bindPopup('<b>万圣节鬼屋</b><br>类型：景点<br>小型建筑<br>SCUM岛上一个节日主题公园，万圣节鬼屋<br><b>会出现的资源</b><br>--你猜？？？？<br><br><text style=color:#ff2a00># X=-483039.188 610861.063 86894.602← </text>', { minWidth: 700 }).addTo(mg_poi);
+        var mm_poi_bwg = L.marker([-201635.7421875, 1144848.6328125], { icon: mi_wh_bwg }).bindPopup('<b>博物馆</b><br>类型：古堡<br>中型建筑<br>SCUM岛上某个博物馆，如果服主设置全图建造，这边造家很好看<br><b>会出现的资源</b><br>--一些武器、子弹、武器配件<br>-一些军用服装和装备<br>-一些挂锁<br>-一些食物<br>-一些制作材料<br><br><text style=color:#ff2a00># X=-542342.125 Y=402864.813 Z=88593.484← </text>', { minWidth: 200 }).addTo(mg_poi);
+        var mm_poi_jy = L.marker([-95947.265625, 1458251.953125], { icon: mi_wh_jy }).bindPopup('<b>军营</b><br>类型：军事<br>大型建筑<br>SCUM岛上最大的军营，物资丰厚，如果服主开启高达，就会有高达<br><b>会出现的资源</b><br>--各种武器、子弹、武器配件<br>-各种军用服装和装备<br>-很多挂锁<br>-很多食物<br>-很多制作材料<br><br><text style=color:#ff2a00># X=-862208.938 Y=519667.063 Z=60451.852← </text>', { minWidth: 200 }).addTo(mg_poi);
+        var mm_poi_pb = L.marker([-29809.5703125, 1281152.34375], { icon: mi_wh_pb }).bindPopup('<b>瀑布</b><br>类型：景点<br>网红景点<br>SCUM岛上一片美丽的瀑布，可以去看看<br><b>可以去拍个照</b><br><br><text style=color:#ff2a00># X=-652594.750 575457.063 67724.602← </text>', { minWidth: 700 }).addTo(mg_poi);
+        var mm_poi_zh = L.marker([-520312.5, 376757.8125], { icon: mi_wh_zh }).bindPopup('<b>战壕</b><br>类型：军事<br>中型建筑<br>SCUM岛上的一个地下战壕（活动死斗区域），在这里你可以发现一些物资<br><b>会出现的资源</b><br>--少量武器、子弹、武器配件<br>-少量军用服装和装备<br>-少量食物<br>-很多制作材料<br><br><text style=color:#ff2a00># X=235583.875 Y=99510.883 Z=27997.262← </text>', { minWidth: 200 }).addTo(mg_poi);
+        var mm_poi_zp = L.marker([-520312.5, 376757.8125], { icon: mi_wh_zp }).bindPopup('<b>帐篷</b><br>类型：军事<br>小型建筑<br>SCUM岛上的一个帐篷区域），在这变露营吃烧烤不错的，啊哈<br><b>会出现的资源</b><br>--少量武器、子弹、武器配件<br>-少量军用服装和装备<br>-少量食物<br>-很多制作材料<br><br><text style=color:#ff2a00># X=216908.141 Y=42986.836 Z=27755.320← </text>', { minWidth: 200 }).addTo(mg_poi);
+        var mm_poi_industrial = L.marker([-969140.625, 948632.8125], { icon: mi_poi_industrial }).bindPopup('<b>鱼工厂</b><br>类型：工业<br>中型建筑<br><b>会出现的资源</b><br>-很多食物<br>-一些制作设备和制作材料<br>-少量的武器和弹药', { minWidth: 240 }).addTo(mg_poi);
+        var mm_poi_quarrya3 = L.marker([-957421.875, 468164.0625], { icon: mi_poi_industrial }).bindPopup('<b>采石场（南）</b><br>类型：工业<br>中型建筑', { minWidth: 240 }).addTo(mg_poi);
+        var mm_poi_quarryb3 = L.marker([-893554.6875, 474609.375], { icon: mi_poi_industrial }).bindPopup('<b>采石场（北）</b><br>类型：工业<br>其他暂时尚未编辑', { minWidth: 240 }).addTo(mg_poi);
+        var mm_poi_navalbase = L.marker([-1150195.3125, 116015.625], { icon: mi_poi_military }).bindPopup('<b>海军基地</b><br>类型：军用<br>其他暂时尚未编辑', { minWidth: 240 }).addTo(mg_poi);
+        var mm_poi_tisnoport = L.marker([-1101855.46875, 672656.25], { icon: mi_poi_industrial }).bindPopup('<b>蒂斯诺港</b><br>类型：工业<br>其他暂时尚未编辑', { minWidth: 240 }).addTo(mg_poi);
+        var mm_poi_factory = L.marker([-616406.25, 1006640.625], { icon: mi_poi_industrial }).bindPopup('<b>工厂</b><br>类型：工业<br>其他暂时尚未编辑', { minWidth: 240 }).addTo(mg_poi);
+        var mm_poi_airfield = L.marker([-641015.625, 861328.125], { icon: mi_poi_military }).bindPopup('<b>机场</b><br>类型：军用<br>其他暂时尚未编辑', { minWidth: 240 }).addTo(mg_poi);
+        var mm_poi_gunrange = L.marker([-717773.4375, 823828.125], { icon: mi_poi_military }).bindPopup('<b>靶场</b><br>类型：军用<br>其他暂时尚未编辑', { minWidth: 240 }).addTo(mg_poi);
+        var mm_poi_trainyard = L.marker([-768164.0625, 517968.75], { icon: mi_poi_industrial }).bindPopup('<b>火车站</b><br>类型：工业<br>其他暂时尚未编辑', { minWidth: 240 }).addTo(mg_poi);
+        var mm_poi_bootcamp = L.marker([-642773.4375, 365625], { icon: mi_poi_military }).bindPopup('<b>新兵训练营</b><br>类型：军用<br>其他暂时尚未编辑', { minWidth: 240 }).addTo(mg_poi);
+        var mm_poi_observatory = L.marker([-418359.375, 932812.5], { icon: mi_poi_scientific }).bindPopup('<b>天文台</b><br>类型：科学<br>其他暂时尚未编辑', { minWidth: 240 }).addTo(mg_poi);
+        var mm_poi_prison = L.marker([-461718.75, 673242.1875], { icon: mi_poi_military }).bindPopup('<b>监狱</b><br>类型：军用<br>其他暂时尚未编辑', { minWidth: 240 }).addTo(mg_poi);
+        var mm_poi_dam = L.marker([-356835.9375, 619921.875], { icon: mi_poi_industrial }).bindPopup('<b>大坝</b><br>类型：工业<br>其他暂时尚未编辑', { minWidth: 240 }).addTo(mg_poi);
+        var mm_poi_coalmine = L.marker([-1361132.8125, 463476.5625], { icon: mi_poi_industrial }).bindPopup('<b>造船厂</b><br>类型：工业<br>其他暂时尚未编辑<br>', { minWidth: 240 }).addTo(mg_poi);
+        var mm_poi_coalmine = L.marker([-1289648.4375, 1033007.8125], { icon: mi_poi_military }).bindPopup('<b>军工厂</b><br>类型：军用<br>其他暂时尚未编辑<br>', { minWidth: 240 }).addTo(mg_poi);
+        var mm_poi_coalmine = L.marker([-1454296.875, 1470117.1875], { icon: mi_poi_industrial }).bindPopup('<b>港口城</b><br>类型：住宅<br>其他暂时尚未编辑<br>', { minWidth: 240 }).addTo(mg_poi);
+        var mm_poi_coalmine = L.marker([-1092773.4375, 1395117.1875], { icon: mi_poi_industrial }).bindPopup('<b>码头（建设中）</b><br>类型：工业<br>其他暂时尚未编辑<br>', { minWidth: 240 }).addTo(mg_poi);
+        var mm_poi_coalmine = L.marker([-887109.375, 1379296.875], { icon: mi_poi_industrial }).bindPopup('<b>砖厂</b><br>类型：工业<br>其他暂时尚未编辑<br>', { minWidth: 240 }).addTo(mg_poi);
+        var mm_poi_apitija = L.marker([-1022753.90625, 1095117.1875], { icon: mi_poi_village }).bindPopup('<b>Apitija村</b><br>类型：村庄<br>村庄通常很小。主要是房屋和/或农场建筑。有时是几个车库。<br><b>会出现的资源</b><br>-食物.<br>-基础制作材料<br>-工具.<br>-背包.<br>-服装.<br>-弓箭.<br>', { minWidth: 240 }).addTo(mg_poi_village);
+        var mm_poi_prigradica = L.marker([-1008105.46875, 824121.09375], { icon: mi_poi_village }).bindPopup('<b>Prigradica村</b><br>类型：村庄<br>村庄通常很小，主要是房屋/或农场建筑，有时候会有几个车库.<br><b>会出现的资源</b><br>-食物.<br>-基础制作材料<br>-工具.<br>-背包.<br>-服装.<br>-弓箭.<br>', { minWidth: 240 }).addTo(mg_poi_village);
+        var mm_poi_zmajan = L.marker([-1018066.40625, 776660.15625], { icon: mi_poi_village }).bindPopup('<b>Zmajan村</b><br>类型：村庄<br>村庄通常很小，主要是房屋/或农场建筑，有时候会有几个车库.<br><b>会出现的资源</b><br>-食物.<br>-基础制作材料<br>-工具.<br>-背包.<br>-服装.<br>-弓箭.<br>', { minWidth: 240 }).addTo(mg_poi_village);
+        var mm_poi_tisno = L.marker([-1087500, 639257.8125], { icon: mi_poi_town }).bindPopup('<b>Tisno镇</b><br>类型：小镇<br>Towns <br>', { minWidth: 240 }).addTo(mg_poi_town);
+        var mm_poi_hum = L.marker([-956542.96875, 592089.84375], { icon: mi_poi_village }).bindPopup('<b>Hum村</b><br>类型：村庄<br>村庄通常很小，主要是房屋/或农场建筑，有时候会有几个车库.<br><b>会出现的资源</b><br>-食物.<br>-基础制作材料<br>-工具.<br>-背包.<br>-服装.<br>-弓箭.<br>', { minWidth: 240 }).addTo(mg_poi_village);
+        var mm_poi_zaton = L.marker([-1117382.8125, 415722.65625], { icon: mi_poi_town }).bindPopup('<b>Zaton镇</b><br>类型：小镇<br>其他暂时尚未编辑<br>', { minWidth: 240 }).addTo(mg_poi_town);
+        var mm_poi_blato = L.marker([-975878.90625, 280664.0625], { icon: mi_poi_town }).bindPopup('<b>Blato镇</b><br>类型：小镇<br>其他暂时尚未编辑<br>', { minWidth: 240 }).addTo(mg_poi_town);
+        var mm_poi_kampor = L.marker([-1085449.21875, 278027.34375], { icon: mi_poi_village }).bindPopup('<b>Kampor村</b><br>类型：村庄<br>村庄通常很小，主要是房屋/或农场建筑，有时候会有几个车库.<br><b>会出现的资源</b><br>-食物.<br>-基础制作材料<br>-工具.<br>-背包.<br>-服装.<br>-弓箭.<br>', { minWidth: 240 }).addTo(mg_poi_village);
+        var mm_poi_prkno = L.marker([-715136.71875, 1065234.375], { icon: mi_poi_town }).bindPopup('<b>Prkno镇</b><br>类型：小镇<br>其他暂时尚未编辑<br>', { minWidth: 240 }).addTo(mg_poi_town);
+        var mm_poi_trpanj = L.marker([-803320.3125, 959765.625], { icon: mi_poi_village }).bindPopup('<b>Trpanj村</b><br>类型：村庄<br>村庄通常很小，主要是房屋/或农场建筑，有时候会有几个车库.<br><b>会出现的资源</b><br>-食物.<br>-基础制作材料<br>-工具.<br>-背包.<br>-服装.<br>-弓箭.<br>', { minWidth: 240 }).addTo(mg_poi_village);
+        var mm_poi_turanj = L.marker([-885351.5625, 1033886.71875], { icon: mi_poi_village }).bindPopup('<b>Turanj村</b><br>类型：村庄<br>村庄通常很小，主要是房屋/或农场建筑，有时候会有几个车库.<br><b>会出现的资源</b><br>-食物.<br>-基础制作材料<br>-工具.<br>-背包.<br>-服装.<br>-弓箭.<br>', { minWidth: 240 }).addTo(mg_poi_village);
+        var mm_poi_spickovina = L.marker([-693164.0625, 665478.515625], { icon: mi_poi_town }).bindPopup('<b>Spickovina镇</b><br>类型：小镇<br>其他暂时尚未编辑<br>', { minWidth: 240 }).addTo(mg_poi_town);
+        var mm_poi_mirkovci = L.marker([-785156.25, 326953.125], { icon: mi_poi_town }).bindPopup('<b>Mirkovci镇</b><br>类型：小镇<br>其他暂时尚未编辑<br>', { minWidth: 240 }).addTo(mg_poi_town);
+        var mm_poi_postira = L.marker([-894726.5625, 588867.1875], { icon: mi_poi_village }).bindPopup('<b>Postira村</b><br>类型：村庄<br>村庄通常很小，主要是房屋/或农场建筑，有时候会有几个车库.<br><b>会出现的资源</b><br>-食物.<br>-基础制作材料<br>-工具.<br>-背包.<br>-服装.<br>-弓箭.<br>', { minWidth: 240 }).addTo(mg_poi_village);
+        var mm_poi_ugljan = L.marker([-726562.5, 120117.1875], { icon: mi_poi_village }).bindPopup('<b>Ugljan村</b><br>类型：村庄<br>村庄通常很小，主要是房屋/或农场建筑，有时候会有几个车库.<br><b>会出现的资源</b><br>-食物.<br>-基础制作材料<br>-工具.<br>-背包.<br>-服装.<br>-弓箭.<br>', { minWidth: 240 }).addTo(mg_poi_village);
+        var mm_poi_punat = L.marker([-843164.0625, 210058.59375], { icon: mi_poi_village }).bindPopup('<b>Punat村</b><br>类型：村庄<br>村庄通常很小，主要是房屋/或农场建筑，有时候会有几个车库.<br><b>会出现的资源</b><br>-食物.<br>-基础制作材料<br>-工具.<br>-背包.<br>-服装.<br>-弓箭.<br>', { minWidth: 240 }).addTo(mg_poi_village);
+        var mm_poi_preko = L.marker([-790429.6875, 123339.84375], { icon: mi_poi_town }).bindPopup('<b>Preko镇</b><br>类型：小镇<br>其他暂时尚未编辑<br>', { minWidth: 240 }).addTo(mg_poi_town);
+        var mm_poi_velikitabor = L.marker([-420410.15625, 1096582.03125], { icon: mi_poi_town }).bindPopup('<b>Veliki Tabor镇</b><br>类型：小镇<br>其他暂时尚未编辑<br>', { minWidth: 240 }).addTo(mg_poi_town);
+        var mm_poi_vinskuvrh = L.marker([-532177.734375, 792187.5], { icon: mi_poi_town }).bindPopup('<b>Vinsku Vrh镇</b><br>类型：小镇<br>其他暂时尚未编辑<br>', { minWidth: 240 }).addTo(mg_poi_town);
+        var mm_poi_zargorje = L.marker([-572753.90625, 447949.21875], { icon: mi_poi_town }).bindPopup('<b>Zargorje镇</b><br>类型：小镇<br>其他暂时尚未编辑<br>', { minWidth: 240 }).addTo(mg_poi_town);
+        var mm_poi_blace = L.marker([-532910.15625, 540820.3125], { icon: mi_poi_village }).bindPopup('<b>Blace村</b><br>类型：村庄<br>村庄通常很小，主要是房屋/或农场建筑，有时候会有几个车库.<br><b>会出现的资源</b><br>-食物.<br>-基础制作材料<br>-工具.<br>-背包.<br>-服装.<br>-弓箭.<br>', { minWidth: 240 }).addTo(mg_poi_village);
+        var mm_poi_dol = L.marker([-451171.875, 469628.90625], { icon: mi_poi_village }).bindPopup('<b>Dol村</b><br>类型：村庄<br>村庄通常很小，主要是房屋/或农场建筑，有时候会有几个车库.<br><b>会出现的资源</b><br>-食物.<br>-基础制作材料<br>-工具.<br>-背包.<br>-服装.<br>-弓箭.<br>', { minWidth: 240 }).addTo(mg_poi_village);
+        var mm_poi_marof = L.marker([-379980.46875, 433886.71875], { icon: mi_poi_village }).bindPopup('<b>Marof村</b><br>类型：村庄<br>村庄通常很小，主要是房屋/或农场建筑，有时候会有几个车库.<br><b>会出现的资源</b><br>-食物.<br>-基础制作材料<br>-工具.<br>-背包.<br>-服装.<br>-弓箭.<br>', { minWidth: 240 }).addTo(mg_poi_village);
+        var mm_poi_rude = L.marker([-486914.0625, 146777.34375], { icon: mi_poi_village }).bindPopup('<b>Rude村</b><br>类型：村庄<br>村庄通常很小，主要是房屋/或农场建筑，有时候会有几个车库.<br><b>会出现的资源</b><br>-食物.<br>-基础制作材料<br>-工具.<br>-背包.<br>-服装.<br>-弓箭.<br>', { minWidth: 240 }).addTo(mg_poi_village);
+        var mm_poi_rupcaga = L.marker([-529101.5625, 181640.625], { icon: mi_poi_village }).bindPopup('<b>Rupcaga村</b><br>类型：村庄<br>村庄通常很小，主要是房屋/或农场建筑，有时候会有几个车库.<br><b>会出现的资源</b><br>-食物.<br>-基础制作材料<br>-工具.<br>-背包.<br>-服装.<br>-弓箭.<br>', { minWidth: 240 }).addTo(mg_poi_village);
+        var mm_poi_klis = L.marker([-523535.15625, 73828.125], { icon: mi_poi_village }).bindPopup('<b>Klis村</b><br>类型：村庄<br>村庄通常很小，主要是房屋/或农场建筑，有时候会有几个车库.<br><b>会出现的资源</b><br>-食物.<br>-基础制作材料<br>-工具.<br>-背包.<br>-服装.<br>-弓箭.<br>', { minWidth: 240 }).addTo(mg_poi_village);
+        var mm_poi_porat = L.marker([-378808.59375, 50390.625], { icon: mi_poi_town }).bindPopup('<b>Porat镇</b><br>类型：小镇<br>其他暂时尚未编辑<br>', { minWidth: 240 }).addTo(mg_poi_town);
+        var mm_poi_prigorje = L.marker([-140185.546875, 1132763.671875], { icon: mi_poi_village }).bindPopup('<b>Prigorje镇</b><br>类型：村庄<br>村庄通常很小，主要是房屋/或农场建筑，有时候会有几个车库.<br><b>会出现的资源</b><br>-食物.<br>-基础制作材料<br>-工具.<br>-背包.<br>-服装.<br>-弓箭.<br>', { minWidth: 240 }).addTo(mg_poi_village);
+        var mm_poi_gorica = L.marker([-50097.65625, 925488.28125], { icon: mi_poi_town }).bindPopup('<b>Gorica镇</b><br>类型：小镇<br>其他暂时尚未编辑<br>', { minWidth: 240 }).addTo(mg_poi_town);
+        var mm_poi_lovke = L.marker([-268066.40625, 723339.84375], { icon: mi_poi_town }).bindPopup('<b>Lovke镇</b><br>类型：小镇<br>其他暂时尚未编辑<br>', { minWidth: 240 }).addTo(mg_poi_town);
+        var mm_poi_gunja = L.marker([-171679.6875, 666503.90625], { icon: mi_poi_village }).bindPopup('<b>Gunja</b><br>类型：村庄<br>村庄通常很小，主要是房屋/或农场建筑，有时候会有几个车库.<br><b>会出现的资源</b><br>-食物.<br>-基础制作材料<br>-工具.<br>-背包.<br>-服装.<br>-弓箭.<br>', { minWidth: 240 }).addTo(mg_poi_village);
+        var mm_poi_babinopolje = L.marker([-86425.78125, 634570.3125], { icon: mi_poi_village }).bindPopup('<b>Babino Polje村</b><br>类型：村庄<br>村庄通常很小，主要是房屋/或农场建筑，有时候会有几个车库.<br><b>会出现的资源</b><br>-食物.<br>-基础制作材料<br>-工具.<br>-背包.<br>-服装.<br>-弓箭.<br>', { minWidth: 240 }).addTo(mg_poi_village);
+        var mm_poi_kotoriba = L.marker([-21093.75, 588574.21875], { icon: mi_poi_village }).bindPopup('<b>Kotoriba村</b><br>类型：村庄<br>村庄通常很小，主要是房屋/或农场建筑，有时候会有几个车库.<br><b>会出现的资源</b><br>-食物.<br>-基础制作材料<br>-工具.<br>-背包.<br>-服装.<br>-弓箭.<br>', { minWidth: 240 }).addTo(mg_poi_village);
+        var mm_poi_novakj = L.marker([-133007.8125, 526757.8125], { icon: mi_poi_village }).bindPopup('<b>Novakj村</b><br>类型：村庄<br>村庄通常很小，主要是房屋/或农场建筑，有时候会有几个车库.<br><b>会出现的资源</b><br>-食物.<br>-基础制作材料<br>-工具.<br>-背包.<br>-服装.<br>-弓箭.<br>', { minWidth: 240 }).addTo(mg_poi_village);
+        var mm_poi_dubrava = L.marker([-207128.90625, 444433.59375], { icon: mi_poi_village }).bindPopup('<b>Dubrava</b><br>类型：村庄<br>村庄通常很小，主要是房屋/或农场建筑，有时候会有几个车库.<br><b>会出现的资源</b><br>-食物.<br>-基础制作材料<br>-工具.<br>-背包.<br>-服装.<br>-弓箭.<br>', { minWidth: 240 }).addTo(mg_poi_village);
+        var mm_poi_gornihumac = L.marker([-106347.65625, 345410.15625], { icon: mi_poi_town }).bindPopup('<b>Gorni Humac镇</b><br>类型：小镇<br>其他暂时尚未编辑<br>', { minWidth: 240 }).addTo(mg_poi_town);
+        var mm_poi_ston = L.marker([-276269.53125, 42773.4375], { icon: mi_poi_town }).bindPopup('<b>Ston镇</b><br>类型：小镇<br>其他暂时尚未编辑<br>', { minWidth: 240 }).addTo(mg_poi_town);
+        var mm_poi_samobor = L.marker([-258984.375, 295312.5], { icon: mi_poi_city }).bindPopup('<b>大城</b><br>类型：城市<br>其他暂时尚未编辑<br>', { minWidth: 240 }).addTo(mg_poi_city);
+        var mm_poi_samobor = L.marker([-1280273.4375, 770507.8125], { icon: mi_poi_city }).bindPopup('<b>克罗地亚城</b><br>类型：城市<br>其他暂时尚未编辑<br><b>会出现的资源</b>', { minWidth: 240 }).addTo(mg_poi_city);
+        var mm_shipwrecka2 = L.marker([-1138769.53125, 842871.09375], { icon: mi_shipwreck }).bindPopup('<b>小港口 A2-a</b><br>类型：货物 ship<br><b>会出现的资源</b><br>', { minWidth: 240 }).addTo(mg_shipwreck);
+        var mm_shipwrecka3a = L.marker([-1163671.875, 454980.46875], { icon: mi_shipwreck }).bindPopup('<b>小港口 A3-a</b><br>类型：拖船<br><b>会出现的资源</b><br>', { minWidth: 240 }).addTo(mg_shipwreck);
+        var mm_shipwrecka3b = L.marker([-1197363.28125, 313183.59375], { icon: mi_shipwreck }).bindPopup('<b>小港口 A3-b</b><br>类型：拖船<br><b>会出现的资源</b><br>', { minWidth: 240 }).addTo(mg_shipwreck);
+        var mm_shipwrecka4a = L.marker([-1176123.046875, 185595.703125], { icon: mi_shipwreck }).bindPopup('<b>小港口 A4-a</b><br>类型：划艇<br><b>会出现的资源</b><br>', { minWidth: 240 }).addTo(mg_shipwreck);
+        var mm_shipwrecka4b = L.marker([-1018066.40625, 21972.65625], { icon: mi_shipwreck }).bindPopup('<b>小港口 A4-b</b><br>类型：拖船<br><b>会出现的资源</b><br>', { minWidth: 240 }).addTo(mg_shipwreck);
+        var mm_shipwreckb4a = L.marker([-869677.734375, 52441.40625], { icon: mi_shipwreck }).bindPopup('<b>小港口 B4-a</b><br>类型：货物 ship<br><b>会出现的资源</b><br>', { minWidth: 240 }).addTo(mg_shipwreck);
+        var mm_shipwreckb4b = L.marker([-683642.578125, 44238.28125], { icon: mi_shipwreck }).bindPopup('<b>小港口 B4-b</b><br>Type: TO DEFINE<br><b>会出现的资源</b><br>', { minWidth: 240 }).addTo(mg_shipwreck);
+        var mm_shipwreckc4a = L.marker([-546093.75, 15820.3125], { icon: mi_shipwreck }).bindPopup('<b>小港口 C4-a</b><br>类型：拖船<br><b>会出现的资源</b><br>', { minWidth: 240 }).addTo(mg_shipwreck);
+        var mm_shipwreckc4b = L.marker([-401953.125, 14062.5], { icon: mi_shipwreck }).bindPopup('<b>小港口 C4-b</b><br>类型：划艇<br><b>会出现的资源</b><br>', { minWidth: 240 }).addTo(mg_shipwreck);
+        var mm_shipwreckc4c = L.marker([-316552.734375, 12011.71875], { icon: mi_shipwreck }).bindPopup('<b>小港口 C4-c</b><br>类型：货物 ship<br><b>会出现的资源</b><br>', { minWidth: 240 }).addTo(mg_shipwreck);
+        var mm_shipwreckd4 = L.marker([-229541.015625, 39697.265625], { icon: mi_shipwreck }).bindPopup('<b>小港口 D4</b><br>类型：划艇<br><b>会出现的资源</b><br>', { minWidth: 240 }).addTo(mg_shipwreck);
+        var mm_ressource_worka1 = L.marker([-1021142.578125, 1094531.25], { icon: mi_ressource_work }).bindPopup('在这个地方有3个工作台 Apitija.', { minWidth: 240 }).addTo(mg_ressource_work);
+        var mm_ressource_worka2a = L.marker([-1005468.75, 825585.9375], { icon: mi_ressource_work }).bindPopup('在这个地方有1个工作台 Prigradica.', { minWidth: 240 }).addTo(mg_ressource_work);
+        var mm_ressource_worka2b = L.marker([-1013818.359375, 775634.765625], { icon: mi_ressource_work }).bindPopup('在这个地方有1个工作台 Zmajan.', { minWidth: 240 }).addTo(mg_ressource_work);
+        var mm_ressource_worka2c = L.marker([-998876.953125, 734765.625], { icon: mi_ressource_work }).bindPopup('在这个地方有1个工作台.', { minWidth: 240 }).addTo(mg_ressource_work);
+        var mm_ressource_worka2d = L.marker([-1065087.890625, 649658.203125], { icon: mi_ressource_work }).bindPopup('在这个地方有1个工作台.', { minWidth: 240 }).addTo(mg_ressource_work);
+        var mm_ressource_worka2e = L.marker([-1092041.015625, 648925.78125], { icon: mi_ressource_work }).bindPopup('在这个地方有6个工作台 Tisno.', { minWidth: 240 }).addTo(mg_ressource_work);
+        var mm_ressource_worka3 = L.marker([-1052490.234375, 358593.75], { icon: mi_ressource_work }).bindPopup('在这个地方有1个工作台.', { minWidth: 240 }).addTo(mg_ressource_work);
+        var mm_ressource_worka4a = L.marker([-978808.59375, 280078.125], { icon: mi_ressource_work }).bindPopup('在这个地方有4个工作台 Blato.', { minWidth: 240 }).addTo(mg_ressource_work);
+        var mm_ressource_worka4b = L.marker([-1147412.109375, 94482.421875], { icon: mi_ressource_work }).bindPopup('在这个地方有2个工作台 Naval base.', { minWidth: 240 }).addTo(mg_ressource_work);
+        var mm_ressource_workb1a = L.marker([-720263.671875, 1066113.28125], { icon: mi_ressource_work }).bindPopup('在这个地方有1个工作台 Prkno.', { minWidth: 240 }).addTo(mg_ressource_work);
+        var mm_ressource_workb1b = L.marker([-606591.796875, 1005908.203125], { icon: mi_ressource_work }).bindPopup('在这个地方有1个工作台 Factory.', { minWidth: 240 }).addTo(mg_ressource_work);
+        var mm_ressource_workb2 = L.marker([-641308.59375, 879345.703125], { icon: mi_ressource_work }).bindPopup('在这个地方有1个工作台.', { minWidth: 240 }).addTo(mg_ressource_work);
+        var mm_ressource_workb2 = L.marker([-650244.140625, 848437.5], { icon: mi_ressource_work }).bindPopup('在这个地方有1个工作台.', { minWidth: 240 }).addTo(mg_ressource_work);
+        var mm_ressource_workb2 = L.marker([-695214.84375, 670898.4375], { icon: mi_ressource_work }).bindPopup('在这个地方有2个工作台 Spickovina.', { minWidth: 240 }).addTo(mg_ressource_work);
+        var mm_ressource_workb3 = L.marker([-770214.84375, 515332.03125], { icon: mi_ressource_work }).bindPopup('在这个地方有1个工作台.', { minWidth: 240 }).addTo(mg_ressource_work);
+        var mm_ressource_workb3 = L.marker([-771386.71875, 320214.84375], { icon: mi_ressource_work }).bindPopup('在这个地方有1个工作台.', { minWidth: 240 }).addTo(mg_ressource_work);
+        var mm_ressource_workb4 = L.marker([-731835.9375, 123925.78125], { icon: mi_ressource_work }).bindPopup('在这个地方有1个工作台 Ugljan.', { minWidth: 240 }).addTo(mg_ressource_work);
+        var mm_ressource_workb4 = L.marker([-794531.25, 120996.09375], { icon: mi_ressource_work }).bindPopup('在这个地方有4个工作台 Preko.', { minWidth: 240 }).addTo(mg_ressource_work);
+        var mm_ressource_workb4 = L.marker([-807421.875, 70312.5], { icon: mi_ressource_work }).bindPopup('在这个地方有1个工作台.', { minWidth: 240 }).addTo(mg_ressource_work);
+        var mm_ressource_workb4 = L.marker([-862207.03125, 108984.375], { icon: mi_ressource_work }).bindPopup('在这个地方有1个工作台.', { minWidth: 240 }).addTo(mg_ressource_work);
+        var mm_ressource_workc1 = L.marker([-572900.390625, 1104492.1875], { icon: mi_ressource_work }).bindPopup('在这个地方有1个工作台.', { minWidth: 240 }).addTo(mg_ressource_work);
+        var mm_ressource_workc1 = L.marker([-418798.828125, 1092041.015625], { icon: mi_ressource_work }).bindPopup('在这个地方有1个工作台.', { minWidth: 240 }).addTo(mg_ressource_work);
+        var mm_ressource_workc1 = L.marker([-404150.390625, 938525.390625], { icon: mi_ressource_work }).bindPopup('在这个地方有1个工作台.', { minWidth: 240 }).addTo(mg_ressource_work);
+        var mm_ressource_workc2 = L.marker([-426855.46875, 889746.09375], { icon: mi_ressource_work }).bindPopup('在这个地方有1个工作台.', { minWidth: 240 }).addTo(mg_ressource_work);
+        var mm_ressource_workc2 = L.marker([-422753.90625, 827343.75], { icon: mi_ressource_work }).bindPopup('在这个地方有1个工作台.', { minWidth: 240 }).addTo(mg_ressource_work);
+        var mm_ressource_workc2 = L.marker([-533496.09375, 798925.78125], { icon: mi_ressource_work }).bindPopup('在这个地方有1个工作台 Vinsku Vrh.', { minWidth: 240 }).addTo(mg_ressource_work);
+        var mm_ressource_workc2 = L.marker([-464355.46875, 667968.75], { icon: mi_ressource_work }).bindPopup('在这个地方有1个工作台 Prison.', { minWidth: 240 }).addTo(mg_ressource_work);
+        var mm_ressource_workc3 = L.marker([-537890.625, 542578.125], { icon: mi_ressource_work }).bindPopup('在这个地方有1个工作台 Blace.', { minWidth: 240 }).addTo(mg_ressource_work);
+        var mm_ressource_workc3 = L.marker([-445312.5, 464941.40625], { icon: mi_ressource_work }).bindPopup('在这个地方有1个工作台 Dol.', { minWidth: 240 }).addTo(mg_ressource_work);
+        var mm_ressource_workc3 = L.marker([-383496.09375, 434912.109375], { icon: mi_ressource_work }).bindPopup('在这个地方有2个工作台 Marof around this point.', { minWidth: 240 }).addTo(mg_ressource_work);
+        var mm_ressource_workc3 = L.marker([-365332.03125, 433007.8125], { icon: mi_ressource_work }).bindPopup('在这个地方有1个工作台 Marof around this point.', { minWidth: 240 }).addTo(mg_ressource_work);
+        var mm_ressource_workc4 = L.marker([-507421.875, 215332.03125], { icon: mi_ressource_work }).bindPopup('在这个地方有1个工作台.', { minWidth: 240 }).addTo(mg_ressource_work);
+        var mm_ressource_workc4 = L.marker([-490429.6875, 145605.46875], { icon: mi_ressource_work }).bindPopup('在这个地方有2个工作台 Rude.', { minWidth: 240 }).addTo(mg_ressource_work);
+        var mm_ressource_workc4 = L.marker([-534375, 70458.984375], { icon: mi_ressource_work }).bindPopup('在这个地方有1个工作台 Klis.', { minWidth: 240 }).addTo(mg_ressource_work);
+        var mm_ressource_workc4 = L.marker([-382177.734375, 49072.265625], { icon: mi_ressource_work }).bindPopup('在这个地方有2个工作台 Porat around this point.', { minWidth: 240 }).addTo(mg_ressource_work);
+        var mm_ressource_workc4 = L.marker([-351855.46875, 39843.75], { icon: mi_ressource_work }).bindPopup('在这个地方有1个工作台 Porat around this point.', { minWidth: 240 }).addTo(mg_ressource_work);
+        var mm_ressource_workd1 = L.marker([-148535.15625, 1132910.15625], { icon: mi_ressource_work }).bindPopup('在这个地方有1个工作台 Prigorje.', { minWidth: 240 }).addTo(mg_ressource_work);
+        var mm_ressource_workd1 = L.marker([-192187.5, 1057910.15625], { icon: mi_ressource_work }).bindPopup('在这个地方有2个工作台 Coal mine.', { minWidth: 240 }).addTo(mg_ressource_work);
+        var mm_ressource_workd1 = L.marker([-47900.390625, 921533.203125], { icon: mi_ressource_work }).bindPopup('在这个地方有1个工作台 Gorica.', { minWidth: 240 }).addTo(mg_ressource_work);
+        var mm_ressource_workd2 = L.marker([-117187.5, 699902.34375], { icon: mi_ressource_work }).bindPopup('在这个地方有1个工作台 Sawmill.', { minWidth: 240 }).addTo(mg_ressource_work);
+        var mm_ressource_workd2 = L.marker([-96093.75, 626513.671875], { icon: mi_ressource_work }).bindPopup('在这个地方有1个工作台 Babino Polje.', { minWidth: 240 }).addTo(mg_ressource_work);
+        var mm_ressource_workd3 = L.marker([-24316.40625, 591650.390625], { icon: mi_ressource_work }).bindPopup('在这个地方有1个工作台 Kotoriba.', { minWidth: 240 }).addTo(mg_ressource_work);
+        var mm_ressource_workd3 = L.marker([-134033.203125, 522363.28125], { icon: mi_ressource_work }).bindPopup('在这个地方有1个工作台 Novakj.', { minWidth: 240 }).addTo(mg_ressource_work);
+        var mm_ressource_workd3 = L.marker([-210351.5625, 447363.28125], { icon: mi_ressource_work }).bindPopup('在这个地方有1个工作台 Dubrava.', { minWidth: 240 }).addTo(mg_ressource_work);
+        var mm_ressource_workd3 = L.marker([-112060.546875, 345556.640625], { icon: mi_ressource_work }).bindPopup('在这个地方有1个工作台 Gorni Humac.', { minWidth: 240 }).addTo(mg_ressource_work);
+        var mm_ressource_workd3 = L.marker([-188818.359375, 336914.0625], { icon: mi_ressource_work }).bindPopup('在这个地方有1个工作台.', { minWidth: 240 }).addTo(mg_ressource_work);
+        var mm_ressource_workd3 = L.marker([-284472.65625, 341894.53125], { icon: mi_ressource_work }).bindPopup('在这个地方有1个工作台.', { minWidth: 240 }).addTo(mg_ressource_work);
+        var mm_ressource_workd4 = L.marker([-33984.375, 264257.8125], { icon: mi_ressource_work }).bindPopup('在这个地方有1个工作台.', { minWidth: 240 }).addTo(mg_ressource_work);
+        var mm_ressource_workd4 = L.marker([-78808.59375, 58007.8125], { icon: mi_ressource_work }).bindPopup('在这个地方有1个工作台.', { minWidth: 240 }).addTo(mg_ressource_work);
+        var mm_ressource_workd4 = L.marker([-166113.28125, 69726.5625], { icon: mi_ressource_work }).bindPopup('在这个地方有1个工作台 Povlja.', { minWidth: 240 }).addTo(mg_ressource_work);
+        var mm_ressource_workd4 = L.marker([-280078.125, 47753.90625], { icon: mi_ressource_work }).bindPopup('在这个地方有1个工作台 Ston.', { minWidth: 240 }).addTo(mg_ressource_work);
+        var mm_ressource_workd4 = L.marker([-696679.6875, 1399804.6875], { icon: mi_ressource_work }).bindPopup('在这个地方有2个工作台 Ston.', { minWidth: 240 }).addTo(mg_ressource_work);
+        var mm_ressource_fuela1 = L.marker([-280165.4670292872, 27875.979244709015], { icon: mi_ressource_fuel }).bindPopup('<b>加油站</b><br>码头上的一些燃油泵。车辆难以或不可能进入<br><text style=color:#ff2a00># X=591492.75 Y=334937 Z=183.221← </text>', { minWidth: 200 }).addTo(mg_ressource_fuel);
+        var mm_ressource_fuela2 = L.marker([-282267.5128381378, 330249.0234375], { icon: mi_ressource_fuel }).bindPopup('<b>加油站</b><br><text style=color:#ff2a00># X=284106.469 Y=333747.125 Z=22539.947← </text>', { minWidth: 200 }).addTo(mg_ressource_fuel);
+        var mm_ressource_fuela3 = L.marker([-145002.70826394207, 494106.4417362213], { icon: mi_ressource_fuel }).bindPopup('<b>加油站</b><br><text style=color:#ff2a00># X=116413.727 Y=471223.656 Z=29474.162← </text>', { minWidth: 200 }).addTo(mg_ressource_fuel);
+        var mm_ressource_fuelb1 = L.marker([-59028.05015830969, 1009262.6944184303], { icon: mi_ressource_fuel }).bindPopup('<b>加油站</b><br><text style=color:#ff2a00># X=-406893.688 Y=559741 Z=83366.047← </text>', { minWidth: 200 }).addTo(mg_ressource_fuel);
+        var mm_ressource_fuelb2 = L.marker([-464033.04992638185, 420937.49418854713], { icon: mi_ressource_fuel }).bindPopup('<b>加油站</b><br><text style=color:#ff2a00># X=192051.703 Y=148579.609 Z=32250.631← </text>', { minWidth: 200 }).addTo(mg_ressource_fuel);
+        var mm_ressource_fuelb3 = L.marker([-307937.87181314104, 1106923.8290190697], { icon: mi_ressource_fuel }).bindPopup('<b>加油站</b><br><text style=color:#ff2a00># X=-506601.188 Y=307196.625 Z=54352.344← </text>', { minWidth: 200 }).addTo(mg_ressource_fuel);
+        var mm_ressource_fuelb4 = L.marker([-492544.4503476248, 1340332.03125], { icon: mi_ressource_fuel }).bindPopup('<b>加油站</b><br>码头上的一些燃油泵。车辆难以或不可能进入<br><text style=color:#ff2a00># X=-741481.25 Y=118434.859 Z=37899.664← </text>', { minWidth: 700 }).addTo(mg_ressource_fuel);
+        var mm_ressource_fuelc1 = L.marker([-459004.7873143865, 1425585.9375], { icon: mi_ressource_fuel }).bindPopup('<b>加油站</b><br><text style=color:#ff2a00># X=-829123.438 Y=154988.422 Z=42958.758← </text>', { minWidth: 200 }).addTo(mg_ressource_fuel);
+        var mm_ressource_fuelc3 = L.marker([-778690.1745032435, 114653.32210063934], { icon: mi_ressource_fuel }).bindPopup('<b>加油站</b><br>码头上的一些燃油泵。车辆难以或不可能进入<br><text style=color:#ff2a00># X=503073.969 Y=-169207.922 Z=245.91← </text>', { minWidth: 700 }).addTo(mg_ressource_fuel);
+        var mm_ressource_fueld1 = L.marker([-861452.9222750334, 364467.7743315697], { icon: mi_ressource_fuel }).bindPopup('<b>加油站</b><br><text style=color:#ff2a00># X=250110.766 Y=-255540.172 Z=15065.326← </text>', { minWidth: 200 }).addTo(mg_ressource_fuel);
+        var mm_ressource_fueld3a = L.marker([-679240.5252646715, 721582.03125], { icon: mi_ressource_fuel }).bindPopup('<b>加油站</b><br><text style=color:#ff2a00># X=-111936.859 Y=-67794.883 Z=36966.988← </text>', { minWidth: 200 }).addTo(mg_ressource_fuel);
+        var mm_ressource_fueld3b = L.marker([-716431.258434901, 1012983.401119709], { icon: mi_ressource_fuel }).bindPopup('<b>加油站</b><br><text style=color:#ff2a00># X=-410883.75 Y=-107296.516 Z=32486.223← </text>', { minWidth: 200 }).addTo(mg_ressource_fuel);
+        var mm_ressource_fueld4 = L.marker([-875313.7185238941, 1338999.0359544754], { icon: mi_ressource_fuel }).bindPopup('<b>加油站</b><br><text style=color:#ff2a00># X=-740268.313 Y=-270102 Z=17136.244← </text>', { minWidth: 200 }).addTo(mg_ressource_fuel);
+        var mm_ressource_fueld4 = L.marker([-1105951.3720940482, 100356.45514726639], { icon: mi_ressource_fuel }).bindPopup('<b>加油站</b><br>码头上的一些燃油泵。车辆难以或不可能进入<br><text style=color:#ff2a00># X=516372.906 Y=-504498.406 Z=255.376← </text>', { minWidth: 200 }).addTo(mg_ressource_fuel);
+        var mm_ressource_fueld4 = L.marker([-1083756.118917718, 587797.8622913361], { icon: mi_ressource_fuel }).bindPopup('<b>加油站</b><br><text style=color:#ff2a00># X=20708.098 Y=-481127.75 Z=6093.097← </text>', { minWidth: 200 }).addTo(mg_ressource_fuel);
+        var mm_ressource_fueld4 = L.marker([-1087640.3852362712, 658212.898671627], { icon: mi_ressource_fuel }).bindPopup('<b>加油站</b><br>码头上的一些燃油泵。车辆难以或不可能进入<br><text style=color:#ff2a00># X=-48667.406 Y=-484714.438 Z=180.232← </text>', { minWidth: 200 }).addTo(mg_ressource_fuel);
+        var mm_ressource_fueld4 = L.marker([-966922.3449595139, 938950.2078294754], { icon: mi_ressource_fuel }).bindPopup('<b>加油站</b><br>码头上的一些燃油泵。车辆难以或不可能进入<br><text style=color:#ff2a00># X=-339961.25 Y=-351094.813 Z=185.467← </text>', { minWidth: 200 }).addTo(mg_ressource_fuel);
+        var mm_ressource_fueld4 = L.marker([-1357385.8560073494, 459067.3975646496], { icon: mi_ressource_fuel }).bindPopup('<b>加油站</b><br>码头上的一些燃油泵。车辆难以或不可能进入<br><text style=color:#ff2a00># X=152510 Y=-755446.813 Z=231.756← </text>', { minWidth: 200 }).addTo(mg_ressource_fuel);
+        var mm_ressource_fueld4 = L.marker([-1354607.0108069966, 510263.6866271496], { icon: mi_ressource_fuel }).bindPopup('<b>加油站</b><br><text style=color:#ff2a00># X=101505.813 -757918.5 Z=1109.148← </text>', { minWidth: 200 }).addTo(mg_ressource_fuel);
+        var mm_ressource_fueld4 = L.marker([-1280225.5919559961, 753208.0270349979], { icon: mi_ressource_fuel }).bindPopup('<b>加油站</b><br>码头上的一些燃油泵。车辆难以或不可能进入<br><text style=color:#ff2a00># X=-146006.125 Y=-685357.063 Z=228.1← </text>', { minWidth: 200 }).addTo(mg_ressource_fuel);
+        var mm_ressource_fueld4 = L.marker([-1275099.0941789967, 882363.2821440697], { icon: mi_ressource_fuel }).bindPopup('<b>加油站</b><br><text style=color:#ff2a00># X=-276984.719 Y=-675969.75 Z=7791.92← </text>', { minWidth: 200 }).addTo(mg_ressource_fuel);
+        var mm_ressource_fueld4 = L.marker([-1276444.0201330958, 1240810.5477690697], { icon: mi_ressource_fuel }).bindPopup('<b>加油站</b><br>码头上的一些燃油泵。车辆难以或不可能进入<br><text style=color:#ff2a00># X=-641931.625 Y=-675879.688 Z=210.222← </text>', { minWidth: 200 }).addTo(mg_ressource_fuel);
+        var mm_ressource_fueld4 = L.marker([-1445874.5285094942, 1493320.3160762787], { icon: mi_ressource_fuel }).bindPopup('<b>加油站</b><br>码头上的一些燃油泵。车辆难以或不可能进入<br><text style=color:#ff2a00># X=-898508.375 Y=-849801.438 Z=180.016← </text>', { minWidth: 200 }).addTo(mg_ressource_fuel);
+        var mm_vehicle_a1b = L.marker([-1068457.03125, 902636.71875], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 1', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_a1c = L.marker([-1022607.421875, 1091748.046875], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 3', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_a1d = L.marker([-973095.703125, 950244.140625], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 3', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_a2a = L.marker([-1097021.484375, 848730.46875], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 1', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_a2b = L.marker([-1011914.0625, 825000], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 1', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_a2c = L.marker([-1020410.15625, 778125], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 1', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_a2d = L.marker([-1064355.46875, 652441.40625], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 1', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_a2e = L.marker([-1091601.5625, 647167.96875], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 3', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_a2f = L.marker([-1103027.34375, 682617.1875], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 1', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_a3a = L.marker([-956982.421875, 588867.1875], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 1', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_a3b = L.marker([-946142.578125, 472851.5625], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 2', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_a3c = L.marker([-1053662.109375, 474023.4375], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 1', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_a3d = L.marker([-1116357.421875, 422460.9375], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 4', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_a4a = L.marker([-1088964.84375, 274804.6875], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 3', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_a4b = L.marker([-979687.5, 276562.5], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 2', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_a4c = L.marker([-947460.9375, 141503.90625], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 1', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_a4d = L.marker([-1093066.40625, 195996.09375], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 1', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_a4e = L.marker([-1156347.65625, 142968.75], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 1', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_a4f = L.marker([-1153710.9375, 109863.28125], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 2', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_b1a = L.marker([-885644.53125, 1028906.25], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 1', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_b1b = L.marker([-870996.09375, 1086621.09375], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 2', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_b1c = L.marker([-832031.25, 1076074.21875], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 2', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_b1d = L.marker([-804492.1875, 964453.125], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 3', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_b1e = L.marker([-757031.25, 1095703.125], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 1', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_b1f = L.marker([-720410.15625, 1062597.65625], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 3', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_b1g = L.marker([-633984.375, 1164843.75], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 1', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_b1h = L.marker([-614941.40625, 1012792.96875], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 4', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_b2a = L.marker([-765820.3125, 879492.1875], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 2', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_b2b = L.marker([-638085.9375, 879492.1875], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 1', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_b2c = L.marker([-651562.5, 840820.3125], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 2', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_b2d = L.marker([-775195.3125, 731250], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 3', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_b2e = L.marker([-841992.1875, 761132.8125], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 1', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_b2f = L.marker([-874804.6875, 633398.4375], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 1', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_b2g = L.marker([-693750, 663281.25], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 2', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_b3a = L.marker([-826171.875, 585937.5], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 2', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_b3b = L.marker([-720703.125, 547265.625], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 1', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_b3c = L.marker([-699609.375, 415429.6875], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 3', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_b3d = L.marker([-641015.625, 353906.25], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 1', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_b3e = L.marker([-788671.875, 320507.8125], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 3', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_b3f = L.marker([-768164.0625, 337500], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 1', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_b3g = L.marker([-888281.25, 472851.5625], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 3', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_b4a = L.marker([-673828.125, 261914.0625], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 1', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_b4b = L.marker([-703125, 101367.1875], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 1', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_b4c = L.marker([-728320.3125, 123046.875], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 2', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_b4d = L.marker([-795703.125, 127734.375], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 2', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_b4e = L.marker([-804492.1875, 75585.9375], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 1', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_b4f = L.marker([-844335.9375, 215039.0625], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 2', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_c1a = L.marker([-574804.6875, 1121777.34375], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 1', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_c1b = L.marker([-570996.09375, 1100976.5625], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 1', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_c1c = L.marker([-549023.4375, 1047363.28125], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 1', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_c1d = L.marker([-462890.625, 1026855.46875], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 1', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_c1e = L.marker([-403125, 934277.34375], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 1', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_c1f = L.marker([-419531.25, 1096582.03125], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 3', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_c1g = L.marker([-456738.28125, 1160742.1875], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 1', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_c1h = L.marker([-313769.53125, 1152832.03125], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 2', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_c1i = L.marker([-307617.1875, 1106835.9375], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 1', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_c1j = L.marker([-517089.84375, 1048828.125], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 1', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_c2 = L.marker([-360498.046875, 863525.390625], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 1', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_c2 = L.marker([-424218.75, 783398.4375], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 1', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_c2 = L.marker([-477539.0625, 805078.125], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 1', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_c2 = L.marker([-532031.25, 790429.6875], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 2', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_c2 = L.marker([-589453.125, 859570.3125], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 1', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_c2 = L.marker([-461865.234375, 670605.46875], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 1', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_c2 = L.marker([-354785.15625, 623583.984375], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 1', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_c2 = L.marker([-350244.140625, 600000], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 1', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_c3 = L.marker([-533203.125, 542578.125], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 3', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_c3 = L.marker([-576562.5, 457031.25], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 3', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_c3 = L.marker([-451904.296875, 472265.625], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 2', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_c3 = L.marker([-436523.4375, 405761.71875], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 1', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_c3 = L.marker([-380712.890625, 431542.96875], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 2', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_c3 = L.marker([-365478.515625, 429492.1875], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 2', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_c3 = L.marker([-329150.390625, 505517.578125], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 1', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_c3 = L.marker([-311132.8125, 348339.84375], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 1', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_c4 = L.marker([-321679.6875, 241992.1875], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 1', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_c4 = L.marker([-368554.6875, 254003.90625], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 1', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_c4 = L.marker([-399902.34375, 261035.15625], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 1', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_c4 = L.marker([-435644.53125, 243164.0625], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 1', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_c4 = L.marker([-445898.4375, 263085.9375], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 1', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_c4 = L.marker([-549609.375, 231152.34375], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 1', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_c4 = L.marker([-573046.875, 162304.6875], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 1', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_c4 = L.marker([-488085.9375, 149414.0625], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 1', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_c4 = L.marker([-527636.71875, 71777.34375], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 2', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_c4 = L.marker([-355078.125, 43359.375], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 1', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_c4 = L.marker([-381738.28125, 53027.34375], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 1', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_c4 = L.marker([-384082.03125, 77929.6875], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 1', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_d1 = L.marker([-187792.96875, 1151074.21875], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 1', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_d1 = L.marker([-140332.03125, 1129394.53125], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 3', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_d1 = L.marker([-193945.3125, 1062597.65625], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 2', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_d1 = L.marker([-283007.8125, 1058789.0625], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 3', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_d1 = L.marker([-255761.71875, 991113.28125], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 1', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_d1 = L.marker([-178710.9375, 947167.96875], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 3', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_d1 = L.marker([-55957.03125, 929589.84375], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 3', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_d2 = L.marker([-229394.53125, 864550.78125], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 1', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_d2 = L.marker([-27246.09375, 775781.25], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 1', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_d2 = L.marker([-40136.71875, 785742.1875], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 1', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_d2 = L.marker([-131835.9375, 704589.84375], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 1', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_d2 = L.marker([-174023.4375, 663281.25], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 1', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_d2 = L.marker([-94628.90625, 627832.03125], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 1', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_d2 = L.marker([-90380.859375, 636035.15625], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 1', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_d2 = L.marker([-80859.375, 639111.328125], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 1', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_d3 = L.marker([-21093.75, 583593.75], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 2', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_d3 = L.marker([-225585.9375, 551367.1875], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 1', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_d3 = L.marker([-134472.65625, 529394.53125], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 1', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_d3 = L.marker([-145019.53125, 498046.875], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 1', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_d3 = L.marker([-108105.46875, 452636.71875], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 1', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_d3 = L.marker([-208886.71875, 442382.8125], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 1', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_d3 = L.marker([-111621.09375, 342480.46875], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 1', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_d3 = L.marker([-187792.96875, 338671.875], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 1', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_d4 = L.marker([-31640.625, 259863.28125], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 2', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_d4 = L.marker([-225000, 246386.71875], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 1', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_d4 = L.marker([-235400.390625, 237597.65625], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 1', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_d4 = L.marker([-284912.109375, 177685.546875], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 1', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_d4 = L.marker([-11279.296875, 177685.546875], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 1', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_d4 = L.marker([-129638.671875, 163037.109375], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 1', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_d4 = L.marker([-36621.09375, 134765.625], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 2', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_d4 = L.marker([-59765.625, 41601.5625], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 1', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_d4 = L.marker([-62988.28125, 46142.578125], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 1', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_d4 = L.marker([-76318.359375, 62109.375], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 1', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_d4 = L.marker([-176367.1875, 66503.90625], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 1', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_d4 = L.marker([-1357324.21875, 509472.65625], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 1', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_d4 = L.marker([-176367.1875, 66503.90625], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 1', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_d4 = L.marker([-1154882.8125, 1216113.28125], { icon: mi_vehicle }).bindPopup('车辆在附近刷新 2', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_vehicle_city = L.marker([-251660.15625, 292089.84375], { icon: mi_vehicle }).bindPopup('整个城市一共有19辆车. (todo)', { minWidth: 240 }).addTo(mg_vehicle);
+        var mm_poi_cavea1a = L.marker([-1032128.90625, 1162500], { icon: mi_poi_cave }).bindPopup('这是一个岩石堆,部分岩石堆存在山洞', { minWidth: 240 }).addTo(mg_poi_cave);
+        var mm_poi_cavea1b = L.marker([-993750, 1156933.59375], { icon: mi_poi_cave }).bindPopup('这是一个岩石堆,部分岩石堆存在山洞', { minWidth: 240 }).addTo(mg_poi_cave);
+        var mm_poi_cavea2a = L.marker([-1163818.359375, 821337.890625], { icon: mi_poi_cave }).bindPopup('这是一个岩石堆,部分岩石堆存在山洞', { minWidth: 240 }).addTo(mg_poi_cave);
+        var mm_poi_cavea2b = L.marker([-986718.75, 696093.75], { icon: mi_poi_cave }).bindPopup('这是一个岩石堆,部分岩石堆存在山洞', { minWidth: 240 }).addTo(mg_poi_cave);
+        var mm_poi_cavea3 = L.marker([-939550.78125, 311425.78125], { icon: mi_poi_cave }).bindPopup('这是一个岩石堆,部分岩石堆存在山洞', { minWidth: 240 }).addTo(mg_poi_cave);
+        var mm_poi_caveb1a = L.marker([-689208.984375, 1173486.328125], { icon: mi_poi_cave }).bindPopup('这是一个岩石堆,部分岩石堆存在山洞', { minWidth: 240 }).addTo(mg_poi_cave);
+        var mm_poi_caveb1b = L.marker([-754687.5, 1127343.75], { icon: mi_poi_cave }).bindPopup('这是一个岩石堆,部分岩石堆存在山洞', { minWidth: 240 }).addTo(mg_poi_cave);
+        var mm_poi_caveb1c = L.marker([-657128.90625, 958300.78125], { icon: mi_poi_cave }).bindPopup('这是一个岩石堆,部分岩石堆存在山洞', { minWidth: 240 }).addTo(mg_poi_cave);
+        var mm_poi_caveb2 = L.marker([-758642.578125, 860888.671875], { icon: mi_poi_cave }).bindPopup('这是一个岩石堆,部分岩石堆存在山洞', { minWidth: 240 }).addTo(mg_poi_cave);
+        var mm_poi_caveb3a = L.marker([-665771.484375, 564843.75], { icon: mi_poi_cave }).bindPopup('这是一个岩石堆,部分岩石堆存在山洞', { minWidth: 240 }).addTo(mg_poi_cave);
+        var mm_poi_caveb3b = L.marker([-711767.578125, 377490.234375], { icon: mi_poi_cave }).bindPopup('这是一个岩石堆,部分岩石堆存在山洞', { minWidth: 240 }).addTo(mg_poi_cave);
+        var mm_poi_caveb3c = L.marker([-847119.140625, 452636.71875], { icon: mi_poi_cave }).bindPopup('这是一个岩石堆,部分岩石堆存在山洞', { minWidth: 240 }).addTo(mg_poi_cave);
+        var mm_poi_caveb4 = L.marker([-719824.21875, 193066.40625], { icon: mi_poi_cave }).bindPopup('这是一个岩石堆,部分岩石堆存在山洞', { minWidth: 240 }).addTo(mg_poi_cave);
+        var mm_poi_cavec1a = L.marker([-424218.75, 1134960.9375], { icon: mi_poi_cave }).bindPopup('这是一个岩石堆,部分岩石堆存在山洞', { minWidth: 240 }).addTo(mg_poi_cave);
+        var mm_poi_cavec1b = L.marker([-447509.765625, 964599.609375], { icon: mi_poi_cave }).bindPopup('这是一个岩石堆,部分岩石堆存在山洞', { minWidth: 240 }).addTo(mg_poi_cave);
+        var mm_poi_cavec2 = L.marker([-417626.953125, 819433.59375], { icon: mi_poi_cave }).bindPopup('这是一个岩石堆,部分岩石堆存在山洞', { minWidth: 240 }).addTo(mg_poi_cave);
+        var mm_poi_cavec2 = L.marker([-567919.921875, 867480.46875], { icon: mi_poi_cave }).bindPopup('这是一个岩石堆,部分岩石堆存在山洞', { minWidth: 240 }).addTo(mg_poi_cave);
+        var mm_poi_cavec2 = L.marker([-535400.390625, 731103.515625], { icon: mi_poi_cave }).bindPopup('这是一个岩石堆,部分岩石堆存在山洞', { minWidth: 240 }).addTo(mg_poi_cave);
+        var mm_poi_cavec2 = L.marker([-428906.25, 606445.3125], { icon: mi_poi_cave }).bindPopup('这是一个岩石堆,部分岩石堆存在山洞', { minWidth: 240 }).addTo(mg_poi_cave);
+        var mm_poi_cavec2 = L.marker([-597070.3125, 671777.34375], { icon: mi_poi_cave }).bindPopup('这是一个岩石堆,部分岩石堆存在山洞', { minWidth: 240 }).addTo(mg_poi_cave);
+        var mm_poi_cavec3 = L.marker([-502734.375, 597656.25], { icon: mi_poi_cave }).bindPopup('这是一个岩石堆,部分岩石堆存在山洞', { minWidth: 240 }).addTo(mg_poi_cave);
+        var mm_poi_cavec3 = L.marker([-578320.3125, 583300.78125], { icon: mi_poi_cave }).bindPopup('这是一个岩石堆,部分岩石堆存在山洞', { minWidth: 240 }).addTo(mg_poi_cave);
+        var mm_poi_cavec3 = L.marker([-452050.78125, 504199.21875], { icon: mi_poi_cave }).bindPopup('这是一个岩石堆,部分岩石堆存在山洞', { minWidth: 240 }).addTo(mg_poi_cave);
+        var mm_poi_cavec3 = L.marker([-535839.84375, 407226.5625], { icon: mi_poi_cave }).bindPopup('这是一个岩石堆,部分岩石堆存在山洞', { minWidth: 240 }).addTo(mg_poi_cave);
+        var mm_poi_cavec4 = L.marker([-316699.21875, 270996.09375], { icon: mi_poi_cave }).bindPopup('这是一个岩石堆,部分岩石堆存在山洞', { minWidth: 240 }).addTo(mg_poi_cave);
+        var mm_poi_caved1 = L.marker([-222656.25, 1010742.1875], { icon: mi_poi_cave }).bindPopup('这是一个岩石堆,部分岩石堆存在山洞', { minWidth: 240 }).addTo(mg_poi_cave);
+        var mm_poi_caved2 = L.marker([-65039.0625, 781640.625], { icon: mi_poi_cave }).bindPopup('这是一个岩石堆,部分岩石堆存在山洞', { minWidth: 240 }).addTo(mg_poi_cave);
+        var mm_poi_caved2 = L.marker([-185595.703125, 678808.59375], { icon: mi_poi_cave }).bindPopup('这是一个岩石堆,部分岩石堆存在山洞', { minWidth: 240 }).addTo(mg_poi_cave);
+        var mm_poi_caved3 = L.marker([-44677.734375, 365185.546875], { icon: mi_poi_cave }).bindPopup('这是一个岩石堆,部分岩石堆存在山洞', { minWidth: 240 }).addTo(mg_poi_cave);
+        var mm_poi_caved4 = L.marker([-148828.125, 125097.65625], { icon: mi_poi_cave }).bindPopup('这是一个岩石堆,部分岩石堆存在山洞', { minWidth: 240 }).addTo(mg_poi_cave);
+        var mm_ww2_d4 = L.marker([-27832.03125, 200683.59375], { icon: mi_ww2 }).bindPopup('这里是二战碉堡,会刷新一些稀有的枪械', { minWidth: 240 }).addTo(mg_ww2);
+        var mm_ww2_d4 = L.marker([-135205.078125, 54345.703125], { icon: mi_ww2 }).bindPopup('这里是二战碉堡,会刷新一些稀有的枪械', { minWidth: 240 }).addTo(mg_ww2);
+        var mm_ww2_d4 = L.marker([-220239.45252151787, 247631.83146715164], { icon: mi_ww2 }).bindPopup('二战碉堡<br><text style=color:#ff2a00># X=366436.688 Y=395612.031 Z=20026.475← </text>', { minWidth: 900 }).addTo(mg_ww2);
+        var mm_ww2_d4 = L.marker([-344091.796875, 77197.265625], { icon: mi_ww2 }).bindPopup('这里是二战碉堡,会刷新一些稀有的枪械', { minWidth: 240 }).addTo(mg_ww2);
+        var mm_ww2_d4 = L.marker([-488232.421875, 29736.32812], { icon: mi_ww2 }).bindPopup('这里是二战碉堡,会刷新一些稀有的枪械', { minWidth: 240 }).addTo(mg_ww2);
+        var mm_ww2_d4 = L.marker([-337646.484375, 381591.796875], { icon: mi_ww2 }).bindPopup('这里是二战碉堡,会刷新一些稀有的枪械', { minWidth: 240 }).addTo(mg_ww2);
+        var mm_ww2_d4 = L.marker([-549902.34375, 642773.4375], { icon: mi_ww2 }).bindPopup('这里是二战碉堡,会刷新一些稀有的枪械', { minWidth: 240 }).addTo(mg_ww2);
+        var mm_ww2_d4 = L.marker([-522509.765625, 837890.625], { icon: mi_ww2 }).bindPopup('这里是二战碉堡,会刷新一些稀有的枪械', { minWidth: 240 }).addTo(mg_ww2);
+        var mm_ww2_d4 = L.marker([-306591.796875, 1067138.671875], { icon: mi_ww2 }).bindPopup('这里是二战碉堡,会刷新一些稀有的枪械', { minWidth: 240 }).addTo(mg_ww2);
+        var mm_ww2_d4 = L.marker([-316552.734375, 1182568.359375], { icon: mi_ww2 }).bindPopup('这里是二战碉堡,会刷新一些稀有的枪械', { minWidth: 240 }).addTo(mg_ww2);
+        var mm_ww2_d4 = L.marker([-389941.40625, 1463964.84375], { icon: mi_ww2 }).bindPopup('这里是二战碉堡,会刷新一些稀有的枪械', { minWidth: 240 }).addTo(mg_ww2);
+        var mm_ww2_d4 = L.marker([-733154.296875, 27978.515625], { icon: mi_ww2 }).bindPopup('这里是二战碉堡,会刷新一些稀有的枪械', { minWidth: 240 }).addTo(mg_ww2);
+        var mm_ww2_d4 = L.marker([-635742.1875, 249462.890625], { icon: mi_ww2 }).bindPopup('这里是二战碉堡,会刷新一些稀有的枪械', { minWidth: 240 }).addTo(mg_ww2);
+        var mm_ww2_d4 = L.marker([-636914.0625, 315234.375], { icon: mi_ww2 }).bindPopup('这里是二战碉堡,会刷新一些稀有的枪械', { minWidth: 240 }).addTo(mg_ww2);
+        var mm_ww2_d4 = L.marker([-824121.09375, 404296.875], { icon: mi_ww2 }).bindPopup('这里是二战碉堡,会刷新一些稀有的枪械', { minWidth: 240 }).addTo(mg_ww2);
+        var mm_ww2_d4 = L.marker([-857080.078125, 503613.28125], { icon: mi_ww2 }).bindPopup('这里是二战碉堡,会刷新一些稀有的枪械', { minWidth: 240 }).addTo(mg_ww2);
+        var mm_ww2_d4 = L.marker([-829541.015625, 649658.203125], { icon: mi_ww2 }).bindPopup('这里是二战碉堡,会刷新一些稀有的枪械', { minWidth: 240 }).addTo(mg_ww2);
+        var mm_ww2_d4 = L.marker([-840380.859375, 812841.796875], { icon: mi_ww2 }).bindPopup('这里是二战碉堡,会刷新一些稀有的枪械', { minWidth: 240 }).addTo(mg_ww2);
+        var mm_ww2_d4 = L.marker([-885351.5625, 954638.671875], { icon: mi_ww2 }).bindPopup('这里是二战碉堡,会刷新一些稀有的枪械', { minWidth: 240 }).addTo(mg_ww2);
+        var mm_ww2_d4 = L.marker([-937207.03125, 64453.125], { icon: mi_ww2 }).bindPopup('这里是二战碉堡,会刷新一些稀有的枪械', { minWidth: 240 }).addTo(mg_ww2);
+        var mm_ww2_d4 = L.marker([-1059375, 78222.65625], { icon: mi_ww2 }).bindPopup('这里是二战碉堡,会刷新一些稀有的枪械', { minWidth: 240 }).addTo(mg_ww2);
+        var mm_ww2_d4 = L.marker([-1177880.859375, 206982.421875], { icon: mi_ww2 }).bindPopup('这里是二战碉堡,会刷新一些稀有的枪械', { minWidth: 240 }).addTo(mg_ww2);
+        var mm_ww2_d4 = L.marker([-1165869.140625, 390673.828125], { icon: mi_ww2 }).bindPopup('这里是二战碉堡,会刷新一些稀有的枪械', { minWidth: 240 }).addTo(mg_ww2);
+        var mm_ww2_d4 = L.marker([-1103759.765625, 480761.71875], { icon: mi_ww2 }).bindPopup('这里是二战碉堡,会刷新一些稀有的枪械', { minWidth: 240 }).addTo(mg_ww2);
+        var mm_ww2_d4 = L.marker([-1144775.390625, 569238.28125], { icon: mi_ww2 }).bindPopup('这里是二战碉堡,会刷新一些稀有的枪械', { minWidth: 240 }).addTo(mg_ww2);
+        var mm_ww2_d4 = L.marker([-1054980.46875, 768603.515625], { icon: mi_ww2 }).bindPopup('这里是二战碉堡,会刷新一些稀有的枪械', { minWidth: 240 }).addTo(mg_ww2);
+        var mm_ww2_d4 = L.marker([-1115625, 873046.875], { icon: mi_ww2 }).bindPopup('这里是二战碉堡,会刷新一些稀有的枪械', { minWidth: 240 }).addTo(mg_ww2);
+        var mm_ww2_d4 = L.marker([-937939.453125, 1074316.40625], { icon: mi_ww2 }).bindPopup('这里是二战碉堡,会刷新一些稀有的枪械', { minWidth: 240 }).addTo(mg_ww2);
+        var mm_ww2_d4 = L.marker([-1141259.765625, 1109912.109375], { icon: mi_ww2 }).bindPopup('这里是二战碉堡,会刷新一些稀有的枪械', { minWidth: 240 }).addTo(mg_ww2);
+        var mm_ww2_d4 = L.marker([-1101416.015625, 1184912.109375], { icon: mi_ww2 }).bindPopup('这里是二战碉堡,会刷新一些稀有的枪械', { minWidth: 240 }).addTo(mg_ww2);
+        var mm_ww2_d4 = L.marker([-958740.234375, 1370800.78125], { icon: mi_ww2 }).bindPopup('这里是二战碉堡,会刷新一些稀有的枪械', { minWidth: 240 }).addTo(mg_ww2);
+        var mm_ww2_d4 = L.marker([-956250, 1362744.140625], { icon: mi_ww2 }).bindPopup('这里是二战碉堡,会刷新一些稀有的枪械', { minWidth: 240 }).addTo(mg_ww2);
+        var mm_ww2_d4 = L.marker([-1094677.734375, 1327001.953125], { icon: mi_ww2 }).bindPopup('这里是二战碉堡,会刷新一些稀有的枪械', { minWidth: 240 }).addTo(mg_ww2);
+        var mm_ww2_d4 = L.marker([-1247460.9375, 1389550.78125], { icon: mi_ww2 }).bindPopup('这里是二战碉堡,会刷新一些稀有的枪械', { minWidth: 240 }).addTo(mg_ww2);
+        var mm_ww2_d4 = L.marker([-1463671.875, 1220361.328125], { icon: mi_ww2 }).bindPopup('这里是二战碉堡,会刷新一些稀有的枪械', { minWidth: 240 }).addTo(mg_ww2);
+        var mm_ww2_d4 = L.marker([-1204248.046875, 984375], { icon: mi_ww2 }).bindPopup('这里是二战碉堡,会刷新一些稀有的枪械', { minWidth: 240 }).addTo(mg_ww2);
+        var mm_ww2_d4 = L.marker([-1446533.203125, 921240.234375], { icon: mi_ww2 }).bindPopup('这里是二战碉堡,会刷新一些稀有的枪械', { minWidth: 240 }).addTo(mg_ww2);
+        var mm_ww2_d4 = L.marker([-1297558.59375, 545800.78125], { icon: mi_ww2 }).bindPopup('这里是二战碉堡,会刷新一些稀有的枪械', { minWidth: 240 }).addTo(mg_ww2);
+        var mm_ww2_d4 = L.marker([-1406542.96875, 376611.328125], { icon: mi_ww2 }).bindPopup('这里是二战碉堡,会刷新一些稀有的枪械', { minWidth: 240 }).addTo(mg_ww2);
+        var mm_ww2_d4 = L.marker([-1334033.203125, 313330.078125], { icon: mi_ww2 }).bindPopup('这里是二战碉堡,会刷新一些稀有的枪械', { minWidth: 240 }).addTo(mg_ww2);
+        var mm_ww2_d4 = L.marker([-1465576.171875, 143115.234375], { icon: mi_ww2 }).bindPopup('这里是二战碉堡,会刷新一些稀有的枪械', { minWidth: 240 }).addTo(mg_ww2);
+        var mm_ww2_d4 = L.marker([-1283056.640625, 102832.03125], { icon: mi_ww2 }).bindPopup('这里是二战碉堡,会刷新一些稀有的枪械', { minWidth: 240 }).addTo(mg_ww2);
+        var mm_lighthouse = L.marker([-765820.3125, 65917.96875], { icon: mi_lighthouse }).bindPopup('B4灯塔建筑', { minWidth: 240 }).addTo(mg_lighthouse);
+        var mm_lighthouse = L.marker([-1012500, 63427.734375], { icon: mi_lighthouse }).bindPopup('A4灯塔建筑', { minWidth: 240 }).addTo(mg_lighthouse);
+        var mm_lighthouse = L.marker([-1276757.8125, 15527.34375], { icon: mi_lighthouse }).bindPopup('Z4灯塔1建筑', { minWidth: 240 }).addTo(mg_lighthouse);
+        var mm_lighthouse = L.marker([-1252880.859375, 263232.421875], { icon: mi_lighthouse }).bindPopup('Z4灯塔2建筑', { minWidth: 240 }).addTo(mg_lighthouse);
+        var mm_lighthouse = L.marker([-1473046.875, 307910.15625], { icon: mi_lighthouse }).bindPopup('Z3灯塔建筑', { minWidth: 240 }).addTo(mg_lighthouse);
+        var mm_lighthouse = L.marker([-1467333.984375, 677490.234375], { icon: mi_lighthouse }).bindPopup('Z2灯塔建筑', { minWidth: 240 }).addTo(mg_lighthouse);
+        var mm_lighthouse = L.marker([-1098193.359375, 846972.65625], { icon: mi_lighthouse }).bindPopup('A2灯塔建筑', { minWidth: 240 }).addTo(mg_lighthouse);
+        var mm_lighthouse = L.marker([-1154736.328125, 1217138.671875], { icon: mi_lighthouse }).bindPopup('A0灯塔建筑', { minWidth: 240 }).addTo(mg_lighthouse);
+        var mm_lighthouse = L.marker([-1326269.53125, 1462207.03125], { icon: mi_lighthouse }).bindPopup('Z0灯塔建筑', { minWidth: 240 }).addTo(mg_lighthouse);
+        var mm_zhuan = L.marker([-230273.4375, 244482.421875], { icon: mi_zhuan }).bindPopup('砖块刷新点', { minWidth: 240 }).addTo(mg_shashi);
+        var mm_zhuan = L.marker([-232470.703125, 239941.40625], { icon: mi_zhuan }).bindPopup('砖块刷新点', { minWidth: 240 }).addTo(mg_shashi);
+        var mm_zhuan = L.marker([-233349.609375, 233642.578125], { icon: mi_zhuan }).bindPopup('砖块刷新点', { minWidth: 240 }).addTo(mg_shashi);
+        var mm_zhuan = L.marker([-276416.015625, 285498.046875], { icon: mi_zhuan }).bindPopup('砖块刷新点', { minWidth: 240 }).addTo(mg_shashi);
+        var mm_zhuan = L.marker([-285937.5, 270263.671875], { icon: mi_zhuan }).bindPopup('砖块刷新点', { minWidth: 240 }).addTo(mg_shashi);
+        var mm_zhuan = L.marker([-288574.21875, 270117.1875], { icon: mi_zhuan }).bindPopup('砖块刷新点', { minWidth: 240 }).addTo(mg_shashi);
+        var mm_zhuan = L.marker([-287695.3125, 261767.578125], { icon: mi_zhuan }).bindPopup('砖块刷新点', { minWidth: 240 }).addTo(mg_shashi);
+        var mm_zhuan = L.marker([-290039.0625, 262060.546875], { icon: mi_zhuan }).bindPopup('砖块刷新点', { minWidth: 240 }).addTo(mg_shashi);
+        var mm_zhuan = L.marker([-295898.4375, 252978.515625], { icon: mi_zhuan }).bindPopup('砖块刷新点', { minWidth: 240 }).addTo(mg_shashi);
+        var mm_zhuan = L.marker([-300439.453125, 253417.96875], { icon: mi_zhuan }).bindPopup('砖块刷新点', { minWidth: 240 }).addTo(mg_shashi);
+        var mm_zhuan = L.marker([-204785.15625, 331054.6875], { icon: mi_zhuan }).bindPopup('砖块刷新点', { minWidth: 240 }).addTo(mg_shashi);
+        var mm_zhuan = L.marker([-225585.9375, 350390.625], { icon: mi_zhuan }).bindPopup('砖块刷新点', { minWidth: 240 }).addTo(mg_shashi);
+        var mm_zhuan = L.marker([-227929.6875, 347753.90625], { icon: mi_zhuan }).bindPopup('砖块刷新点', { minWidth: 240 }).addTo(mg_shashi);
+        var mm_zhuan = L.marker([-240966.796875, 355078.125], { icon: mi_zhuan }).bindPopup('砖块刷新点', { minWidth: 240 }).addTo(mg_shashi);
+        var mm_zhuan = L.marker([-487939.453125, 801123.046875], { icon: mi_zhuan }).bindPopup('砖块刷新点', { minWidth: 240 }).addTo(mg_shashi);
+        var mm_zhuan = L.marker([-293261.71875, 329882.8125], { icon: mi_zhuan }).bindPopup('砖块刷新点', { minWidth: 240 }).addTo(mg_shashi);
+        var mm_zhuan = L.marker([-956250, 717041.015625], { icon: mi_zhuan }).bindPopup('砖块刷新点', { minWidth: 240 }).addTo(mg_shashi);
+        var mm_zhuan = L.marker([-1131738.28125, 711328.125], { icon: mi_zhuan }).bindPopup('砖块刷新点', { minWidth: 240 }).addTo(mg_shashi);
+        var mm_zhuan = L.marker([-1139941.40625, 720117.1875], { icon: mi_zhuan }).bindPopup('砖块刷新点', { minWidth: 240 }).addTo(mg_shashi);
+        var mm_zhuan = L.marker([-1297265.625, 769482.421875], { icon: mi_zhuan }).bindPopup('砖块刷新点', { minWidth: 240 }).addTo(mg_shashi);
+        var mm_zhuan = L.marker([-894726.5625, 1386328.125], { icon: mi_zhuan }).bindPopup('砖块刷新点', { minWidth: 240 }).addTo(mg_shashi);
+        var mm_zhuan = L.marker([-894433.59375, 1375781.25], { icon: mi_zhuan }).bindPopup('砖块刷新点', { minWidth: 240 }).addTo(mg_shashi);
+        var mm_zhuan = L.marker([-1296386.71875, 769921.875], { icon: mi_zhuan }).bindPopup('砖块刷新点', { minWidth: 240 }).addTo(mg_shashi);
+        var mm_shuini = L.marker([-230273.4375, 244775.390625], { icon: mi_shuini }).bindPopup('水泥刷新点', { minWidth: 240 }).addTo(mg_shashi);
+        var mm_shuini = L.marker([-232324.21875, 241992.1875], { icon: mi_shuini }).bindPopup('水泥刷新点', { minWidth: 240 }).addTo(mg_shashi);
+        var mm_shuini = L.marker([-233349.609375, 233935.546875], { icon: mi_shuini }).bindPopup('水泥刷新点', { minWidth: 240 }).addTo(mg_shashi);
+        var mm_shuini = L.marker([-231591.796875, 232910.15625], { icon: mi_shuini }).bindPopup('水泥刷新点', { minWidth: 240 }).addTo(mg_shashi);
+        var mm_shuini = L.marker([-276855.46875, 286083.984375], { icon: mi_shuini }).bindPopup('水泥刷新点', { minWidth: 240 }).addTo(mg_shashi);
+        var mm_shuini = L.marker([-286523.4375, 270703.125], { icon: mi_shuini }).bindPopup('水泥刷新点', { minWidth: 240 }).addTo(mg_shashi);
+        var mm_shuini = L.marker([-287255.859375, 268066.40625], { icon: mi_shuini }).bindPopup('水泥刷新点', { minWidth: 240 }).addTo(mg_shashi);
+        var mm_shuini = L.marker([-289746.09375, 260742.1875], { icon: mi_shuini }).bindPopup('水泥刷新点', { minWidth: 240 }).addTo(mg_shashi);
+        var mm_shuini = L.marker([-298535.15625, 254882.8125], { icon: mi_shuini }).bindPopup('水泥刷新点', { minWidth: 240 }).addTo(mg_shashi);
+        var mm_shuini = L.marker([-205224.609375, 329882.8125], { icon: mi_shuini }).bindPopup('水泥刷新点', { minWidth: 240 }).addTo(mg_shashi);
+        var mm_shuini = L.marker([-226757.8125, 350537.109375], { icon: mi_shuini }).bindPopup('水泥刷新点', { minWidth: 240 }).addTo(mg_shashi);
+        var mm_shuini = L.marker([-242578.125, 356103.515625], { icon: mi_shuini }).bindPopup('水泥刷新点', { minWidth: 240 }).addTo(mg_shashi);
+        var mm_shuini = L.marker([-290625, 331201.171875], { icon: mi_shuini }).bindPopup('水泥刷新点', { minWidth: 240 }).addTo(mg_shashi);
+        var mm_shuini = L.marker([-292968.75, 329882.8125], { icon: mi_shuini }).bindPopup('水泥刷新点', { minWidth: 240 }).addTo(mg_shashi);
+        var mm_shuini = L.marker([-294726.5625, 330908.203125], { icon: mi_shuini }).bindPopup('水泥刷新点', { minWidth: 240 }).addTo(mg_shashi);
+        var mm_shuini = L.marker([-607617.1875, 1016601.5625], { icon: mi_shuini }).bindPopup('水泥刷新点', { minWidth: 240 }).addTo(mg_shashi);
+        var mm_shuini = L.marker([-620947.265625, 1021582.03125], { icon: mi_shuini }).bindPopup('水泥刷新点', { minWidth: 240 }).addTo(mg_shashi);
+        var mm_shuini = L.marker([-1285986.328125, 758642.578125], { icon: mi_shuini }).bindPopup('水泥刷新点', { minWidth: 240 }).addTo(mg_shashi);
+        var mm_shuini = L.marker([-1299023.4375, 772265.625], { icon: mi_shuini }).bindPopup('水泥刷新点', { minWidth: 240 }).addTo(mg_shashi);
+        var mm_shuini = L.marker([-1298876.953125, 775488.28125], { icon: mi_shuini }).bindPopup('水泥刷新点', { minWidth: 240 }).addTo(mg_shashi);
+        var mm_shashi = L.marker([-881542.96875, 471386.71875], { icon: mi_shashi }).bindPopup('石子刷新点', { minWidth: 240 }).addTo(mg_shashi);
+        var mm_shashi = L.marker([-888134.765625, 481640.625], { icon: mi_shashi }).bindPopup('石子刷新点', { minWidth: 240 }).addTo(mg_shashi);
+        var mm_shashi = L.marker([-890917.96875, 482812.5], { icon: mi_shashi }).bindPopup('石子刷新点', { minWidth: 240 }).addTo(mg_shashi);
+        var mm_shashi = L.marker([-895458.984375, 478125], { icon: mi_shashi }).bindPopup('石子刷新点', { minWidth: 240 }).addTo(mg_shashi);
+        var mm_shashi = L.marker([-898388.671875, 478271.484375], { icon: mi_shashi }).bindPopup('石子刷新点', { minWidth: 240 }).addTo(mg_shashi);
+        var mm_shashi = L.marker([-938378.90625, 475927.734375], { icon: mi_shashi }).bindPopup('石子刷新点', { minWidth: 240 }).addTo(mg_shashi);
+        var mm_shashi = L.marker([-937939.453125, 470654.296875], { icon: mi_shashi }).bindPopup('石子刷新点', { minWidth: 240 }).addTo(mg_shashi);
+        var mm_shashi = L.marker([-940576.171875, 470800.78125], { icon: mi_shashi }).bindPopup('石子刷新点', { minWidth: 240 }).addTo(mg_shashi);
+        var mm_shashi = L.marker([-953027.34375, 466406.25], { icon: mi_shashi }).bindPopup('石子刷新点', { minWidth: 240 }).addTo(mg_shashi);
+        var mm_gs = L.marker([-78824.63817650602, 64423.826336860664], { icon: mi_pg }).bindPopup('苹果树<br><text style=color:#ff2a00># X=554534.25 Y=539507.625 Z=17946.207← </text>', { minWidth: 240 }).addTo(mg_gs);
+        var mm_gs = L.marker([-77766.44522815928, 63574.21875000001], { icon: mi_xg }).bindPopup('西瓜地<br><text style=color:#ff2a00># X=554745.813 Y=540091.563 Z=17948.209← </text>', { minWidth: 240 }).addTo(mg_gs);
+        var mm_gs = L.marker([-83029.60864249371, 61904.284358024604], { icon: mi_yt }).bindPopup('樱桃树<br><text style=color:#ff2a00># X=556926.813 Y=534640.938 Z=17967.064← </text>', { minWidth: 240 }).addTo(mg_gs);
+        var mm_gs = L.marker([-14992.393410856921, 175166.00489616397], { icon: mi_gl }).bindPopup('橄榄树<br><text style=color:#ff2a00># X=441622.844 Y=604003.438 Z=8490.217← </text>', { minWidth: 240 }).addTo(mg_gs);
+        var mm_gs = L.marker([-16163.933185884065, 173408.19239616397], { icon: mi_pg }).bindPopup('苹果树<br><text style=color:#ff2a00># X=442422.125 Y=601217.25 Z=8346.545← </text>', { minWidth: 240 }).addTo(mg_gs);
+        var mm_gs = L.marker([-36080.10936134547, 265927.7111291886], { icon: mi_xlh }).bindPopup('西蓝花<br><text style=color:#ff2a00># X=349286.375 Y=582956.875 Z=13720.303← </text>', { minWidth: 240 }).addTo(mg_gs);
+        var mm_gs = L.marker([-36665.87924885905, 267246.0705041886], { icon: mi_yt }).bindPopup('樱桃树<br><text style=color:#ff2a00># X=348515.344 Y=582257.063 Z=13756.094← </text>', { minWidth: 240 }).addTo(mg_gs);
+        var mm_gs = L.marker([-39008.95879891333, 261826.14862918857], { icon: mi_pg }).bindPopup('苹果树<br><text style=color:#ff2a00># X=353488.438 Y=579738 Z=13672.303← </text>', { minWidth: 240 }).addTo(mg_gs);
+        var mm_gs = L.marker([-41059.153405210825, 257724.58612918857], { icon: mi_pg }).bindPopup('苹果树<br><text style=color:#ff2a00># X=357192.25 Y=578270.563 Z=13718.956← </text>', { minWidth: 240 }).addTo(mg_gs);
+        var mm_gs = L.marker([-35494.339473831904, 252011.69550418857], { icon: mi_pg }).bindPopup('苹果树<br><text style=color:#ff2a00># X=362884.125 Y=583330.125 Z=13592.684← </text>', { minWidth: 240 }).addTo(mg_gs);
+        var mm_gs = L.marker([-30661.73790184495, 253915.99237918857], { icon: mi_pg }).bindPopup('苹果树<br><text style=color:#ff2a00># X=361177.969 Y=588680.875 Z=13482.418← </text>', { minWidth: 240 }).addTo(mg_gs);
+        var mm_gs = L.marker([-31247.50778935852, 259482.39862918857], { icon: mi_pg }).bindPopup('苹果树<br><text style=color:#ff2a00># X=355611.063 Y=588326.25 Z=13560.096← </text>', { minWidth: 240 }).addTo(mg_gs);
+        var mm_gs = L.marker([-31247.50778935852, 259482.39862918857], { icon: mi_pg }).bindPopup('苹果树<br><text style=color:#ff2a00># X=355611.063 Y=588326.25 Z=13560.096← </text>', { minWidth: 240 }).addTo(mg_gs);
+        var mm_gs = L.marker([-37837.419023886185, 254501.92987918857], { icon: mi_yt }).bindPopup('樱桃树<br><text style=color:#ff2a00># X=360675.5 Y=580898.938 Z=13641.518← </text>', { minWidth: 240 }).addTo(mg_gs);
+        var mm_gs = L.marker([-30368.852958088162, 258603.49237918857], { icon: mi_bc }).bindPopup('包菜<br><text style=color:#ff2a00># X=357060.063 Y=589042.625 Z=13533.187← </text>', { minWidth: 240 }).addTo(mg_gs);
+        var mm_gs = L.marker([-28110.6691324103, 254443.35937500003], { icon: mi_hg }).bindPopup('黄瓜<br><text style=color:#ff2a00># X=360316.656 Y=590761.813 Z=13412.121← </text>', { minWidth: 240 }).addTo(mg_gs);
+        var mm_jy = L.marker([-1156533.8636670164, 1217329.104244709], { icon: mi_jy }).bindPopup('A0交易站<br><text style=color:#ff2a00># X=-616861.188 Y=-548803.75 Z=2450.667← </text>', { minWidth: 200 }).addTo(mg_jy);
+        var mm_jy = L.marker([-324293.3187472617, 756796.8785762787], { icon: mi_jy }).bindPopup('C2交易站<br><text style=color:#ff2a00># X=-149853.25 Y=293812.781 Z=69705.086← </text>', { minWidth: 200 }).addTo(mg_jy);
+        var mm_jy = L.marker([-832240.1219725081, 44765.60354232788], { icon: mi_jy }).bindPopup('B4交易站<br><text style=color:#ff2a00># X=573345.375 Y=-223017.656 Z=468.383← </text>', { minWidth: 200 }).addTo(mg_jy);
+        var mm_jy = L.marker([-1272739.0773827133, 588515.5320167542], { icon: mi_jy }).bindPopup('Z3交易站<br><text style=color:#ff2a00># X=26131.494 Y=-674094.875 Z=363.73← </text>', { minWidth: 200 }).addTo(mg_jy);
+        var mm_zodiac1 = L.marker([-3149.4140625, 2490.234375], { icon: mi_D4 }).addTo(map);
+        var mm_zodiac2 = L.marker([-2600.71875, 302636.71875], { icon: mi_D3 }).addTo(map);
+        var mm_zodiac3 = L.marker([-3662.109375, 602636.71875], { icon: mi_D2 }).addTo(map);
+        var mm_zodiac4 = L.marker([-4687.5, 904101.5625], { icon: mi_D1 }).addTo(map);
+        var mm_zodiac5 = L.marker([-3662.109375, 1203149.4140625], { icon: mi_D0 }).addTo(map);
+        var mm_zodiac6 = L.marker([-303808.59375, 3002.9296875], { icon: mi_C4 }).addTo(map);
+        var mm_zodiac7 = L.marker([-305346.6796875, 303515.625], { icon: mi_C3 }).addTo(map);
+        var mm_zodiac8 = L.marker([-306298.828125, 605419.921875], { icon: mi_C2 }).addTo(map);
+        var mm_zodiac9 = L.marker([-303295.8984375, 903002.9296875], { icon: mi_C1 }).addTo(map);
+        var mm_zodiac10 = L.marker([-304101.5625, 1202709.9609375], { icon: mi_C0 }).addTo(map);
+        var mm_zodiac11 = L.marker([-602197.265625, 1904.296875], { icon: mi_B4 }).addTo(map);
+        var mm_zodiac12 = L.marker([-603369.140625, 302856.4453125], { icon: mi_B3 }).addTo(map);
+        var mm_zodiac13 = L.marker([-602929.6875, 603002.9296875], { icon: mi_B2 }).addTo(map);
+        var mm_zodiac14 = L.marker([-602783.203125, 902490.234375], { icon: mi_B1 }).addTo(map);
+        var mm_zodiac15 = L.marker([-602343.75, 1202416.9921875], { icon: mi_B0 }).addTo(map);
+        var mm_zodiac16 = L.marker([-902050.78125, 1904.296875], { icon: mi_A4 }).addTo(map);
+        var mm_zodiac17 = L.marker([-902124.0234375, 302050.78125], { icon: mi_A3 }).addTo(map);
+        var mm_zodiac18 = L.marker([-903222.65625, 602856.4453125], { icon: mi_A2 }).addTo(map);
+        var mm_zodiac19 = L.marker([-902929.6875, 902490.234375], { icon: mi_A1 }).addTo(map);
+        var mm_zodiac20 = L.marker([-904614.2578125, 1204028.3203125], { icon: mi_A11 }).addTo(map);
+        var mm_zodiac21 = L.marker([-1203295.8984375, 2270.5078125], { icon: mi_Z4 }).addTo(map);
+        var mm_zodiac22 = L.marker([-1201977.5390625, 301757.8125], { icon: mi_Z3 }).addTo(map);
+        var mm_zodiac23 = L.marker([-1203076.171875, 602709.9609375], { icon: mi_Z2 }).addTo(map);
+        var mm_zodiac24 = L.marker([-1202270.5078125, 902050.78125], { icon: mi_Z1 }).addTo(map);
+        var mm_zodiac25 = L.marker([-1202783.203125, 1202050.78125], { icon: mi_Z0 }).addTo(map);
+        var mm_zodiac26 = L.marker([-1156533.8636670164, 1217329.104244709], { icon: mi_交易站 }).addTo(map);
+        var mm_zodiac26 = L.marker([-324293.3187472617, 756796.8785762787], { icon: mi_交易站 }).addTo(map);
+        var mm_zodiac26 = L.marker([-832240.1219725081, 44765.60354232788], { icon: mi_交易站 }).addTo(map);
+        var mm_zodiac26 = L.marker([-1272739.0773827133, 588515.5320167542], { icon: mi_交易站 }).addTo(map);
+
+
+
+
+
+
+
+
+    </script>
+</body>
+
+</html>
